@@ -7,7 +7,8 @@ addpath C:\Users\dqz718\Documents\fieldtrip-20210525
 ft_defaults;
 
 %subjects for analysis
-projectdir = ('I:\SCIENCE-NEXS-neurolab\PROJECTS\PLAYMORE\EEG_project1\Analyses\Data');
+projectdir = ('I:\SCIENCE-NEXS-neurolab\PROJECTS\PLAYMORE\EEG_project1\Analyses\EEG_Data');
+outputdir = ('I:\SCIENCE-NEXS-neurolab\PROJECTS\PLAYMORE\EEG_project1\Analyses\B-D_EEG_Repo\Results');
 cd(projectdir)
 
 subjects = readtable ('subjects.xlsx');
@@ -24,7 +25,8 @@ neighbours = importdata(neighbours_file);
 %3D electrode structure 
 elec_file = 'standard_1020.elc';
 elec = ft_read_sens(elec_file);  
-  
+
+cd(outputdir);
 %Structure with bad channels
 allBadchannels = importdata('allBadchannels.mat');
 
