@@ -1,0 +1,525 @@
+---
+title: "Behavioural Data Playmore EEG"
+author: "Marta Topor"
+date: "8/10/2021"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, eval = TRUE, warning = FALSE, message = FALSE)
+```
+
+```{r data_setup}
+setwd("I:/SCIENCE-NEXS-neurolab/PROJECTS/PLAYMORE/EEG_project1/Analyses")
+library(tidyverse)
+library(knitr)
+library(yarrr)
+
+Sys.setenv(lang = "en_UK")
+
+#read all data
+df <- read.csv('all_subjects.csv')
+
+#select those who meet inclusion critera
+df_inc <- filter(df, Included_an1 == 1)
+
+```
+
+# Demographic Information
+
+
+```{r demo_data}
+#In this chunk I create all objects that will be displayed in my table, my table will have two columns so each object needs to have two numbers 
+N_TS <- sum(df_inc$Cond == "TS") #callculate the number of participants in the intervention group
+N_ET <- sum(df_inc$Cond == "ET") #callculate the number of participants in the control group
+
+N <- c(sum(df_inc$Cond == "TS"), sum(df_inc$Cond == "ET")) #object 1 - number of all participants 
+
+`Age Mean` <- c(mean(df_inc$Age[df_inc$Cond == "TS"]), mean(df_inc$Age[df_inc$Cond == "ET"])) #object2 - age of participants
+`Age Min` <- c(min(df_inc$Age[df_inc$Cond == "TS"]), min(df_inc$Age[df_inc$Cond == "ET"])) #object3 - minimum age 
+`Age Max` <- c(max(df_inc$Age[df_inc$Cond == "TS"]), max(df_inc$Age[df_inc$Cond == "ET"])) #object 4 - maximum age
+
+`Male %` <- c((sum(df_inc$Sex[df_inc$Cond == "TS"] == "M")/N_TS)*100, sum((df_inc$Sex[df_inc$Cond == "ET"] == "M")/N_ET)*100) #object5 - percentage of males
+`Female %` <- c((sum(df_inc$Sex[df_inc$Cond == "TS"] == "F")/N_TS)*100, sum((df_inc$Sex[df_inc$Cond == "ET"] == "F")/N_ET)*100) #object6 - percentage of females
+
+`Year 0 %` <- c((sum(df_inc$School_year[df_inc$Cond == "TS"] == 0)/N_TS)*100, sum((df_inc$School_year[df_inc$Cond == "ET"] == 0)/N_ET)*100) #boject7 - percentage of children in grade 0
+`Year 1 %` <- c((sum(df_inc$School_year[df_inc$Cond == "TS"] == 1)/N_TS)*100, sum((df_inc$School_year[df_inc$Cond == "ET"] == 1)/N_ET)*100) #object8 - percentage of children in grade 1
+ 
+`Bilingual %` <- c((sum(df_inc$Bilingual[df_inc$Cond == "TS"] == 1)/N_TS)*100, sum((df_inc$Bilingual[df_inc$Cond == "ET"] == 1)/N_ET)*100) #object9 - percentage of children who are bilingual
+
+`Right Handed %` <- c((sum(df_inc$Dom_hand[df_inc$Cond == "TS"] == "R")/N_TS)*100, sum((df_inc$Dom_hand[df_inc$Cond == "ET"] == "R")/N_ET)*100) #object10 - percentage of children who are righthanded
+`Left Handed %` <- c((sum(df_inc$Dom_hand[df_inc$Cond == "TS"] == "L")/N_TS)*100, sum((df_inc$Dom_hand[df_inc$Cond == "ET"] == "L")/N_ET)*100) #object 11 - percentage of children who are lefthanded
+
+demo <- as.data.frame(rbind(N, `Age Mean`, `Age Min`, `Age Max`, `Male %`, `Female %`, `Year 0 %`, `Year 1 %`, `Bilingual %`, `Right Handed %`, `Left Handed %`)) #make a data frame with all of the above objects - it should have 11 rows and two columns
+
+colnames(demo) <- c('Touch Screen', 'Eye Tracker') #add column names 
+
+kable(demo, digits = 0) #make the table and specify how many decimal places should be displayed
+```
+
+\newline  
+  
+**Comments:** There are a couple of issues with the demographics of both groups:  
+  
+- In the eye-tracker group, most participants are boys  
+  
+- In the touch-screen group, most participants are from grade 1 and in the eye-tracker group, from grade 0. We have tried to balance this out as well as we could.  
+  
+Statistical comparisons of intervention data will be adjusted for age using a GLM approach that is consistent with the model that is used to regress out confounds in Fieldtrip.    
+  
+\newline  
+  
+# Intervention Details  
+Two participants were removed from the RT and DT comparisons because of Touch Screen failure and responses being pressed with the mouse. This led to inaccurate RTs. Thereofre, for RT and DT measures, there are 7 participants in the touch-screen group and 10 participants in the eye-tracker group.  
+
+```{r int_data}
+#correct the RT and Acc data 
+#Accuracy
+regr = df_inc$Age #this is the confound 
+dat = df_inc$Train_acc #this is the data that should be corrected
+# B = X\Y (beta estimate)
+beta = regr / dat 
+# Model = X*X\Y
+model = regr * beta
+# Y clean
+Yclean = dat - model
+
+df_inc$Train_acc_cor <- Yclean
+
+#RT
+regr = df_inc$Age #this is the confound 
+dat = df_inc$Train_corr_RT #this is the data that should be corrected
+# B = X\Y (beta estimate)
+beta = regr / dat 
+# Model = X*X\Y
+model = regr * beta
+# Y clean
+Yclean = dat - model
+
+df_inc$Train_corr_RT_cor <- Yclean
+
+#DT
+regr = df_inc$Age #this is the confound 
+dat = df_inc$Train_corr_DT #this is the data that should be corrected
+# B = X\Y (beta estimate)
+beta = regr / dat 
+# Model = X*X\Y
+model = regr * beta
+# Y clean
+Yclean = dat - model
+
+df_inc$Train_corr_DT_cor <- Yclean
+
+#select the data for accuracy and rt 
+df_inc_acc <- filter(df_inc, Train_eprime_acc_reliability == "1")
+df_inc_rt <- filter(df_inc, Train_eprime_rt_reliability == "1")
+`Training Accuracy Mean` <- c(mean(df_inc$Train_acc[df_inc$Cond == "TS"]), mean(df_inc$Train_acc[df_inc$Cond == "ET"]))
+`Training Accuracy Min` <- c(min(df_inc$Train_acc[df_inc$Cond == "TS"]), min(df_inc$Train_acc[df_inc$Cond == "ET"]))
+`Training Accuracy Max` <- c(max(df_inc$Train_acc[df_inc$Cond == "TS"]), max(df_inc$Train_acc[df_inc$Cond == "ET"]))
+`Training Correct RT` <- c(mean(df_inc$Train_corr_RT[df_inc$Cond == "TS" & df_inc$Train_eprime_rt_reliability == 1]), mean(df_inc$Train_corr_RT[df_inc$Cond == "ET"])) 
+`Training Correct DT` <- c(mean(df_inc$Train_corr_DT[df_inc$Cond == "TS" & df_inc$Train_eprime_rt_reliability == 1]), mean(df_inc$Train_corr_DT[df_inc$Cond == "ET"]))
+
+training <- as.data.frame(rbind(`Training Accuracy Mean`, `Training Accuracy Min`, `Training Accuracy Max`, `Training Correct RT`, `Training Correct DT`))
+
+colnames(training) <- c('Touch Screen', 'Eye Tracker')
+
+kable(training, digits = 2)
+```
+  
+<br> 
+  
+#### Intervention Accuracy Comparison  
+  
+<br> 
+  
+  
+```{r int_acc}
+int_acc_TS <- df_inc$Train_acc_cor[df_inc$Cond == 'TS']
+int_acc_ET <- df_inc$Train_acc_cor[df_inc$Cond == 'ET']
+
+int_acc_test <- wilcox.test(int_acc_TS, int_acc_ET)
+int_acc_test                           
+```
+\newline  
+  
+Corrected p-value: `r int_acc_test$p.value*3` 
+  
+\newline  
+  
+```{r int_acc_plot}
+pirateplot(formula = Train_acc~Cond, #which variables are you using
+           data = df_inc,
+           theme = 0, #check out different themes in the guide page linked at the top, theme 0 is starting from scratch
+           main = "Intervention Accuracy", #title of the graph
+           par(cex.main = 1.2), #set the size of your title
+           xlab="Intervention Group", #label of the x axis
+           ylab="Accuracy", #label of the y axis
+           cex.lab = 1.2, #size of the axis labels
+           pal = "basel", # color palette, look at the instruction link to identify different palettes
+           inf.method = 'hdi', # method of inference - either High Density Interval (hdi, from Bayesian stats), or standard Confidence Interval (ci)
+           bean.f.o = 0.5, # Bean fill darkness
+           point.o = .3, # points darkness
+           inf.f.o = .5, # Inference fill
+           inf.b.o = .5, # Inference border
+           avg.line.o = 0.7, # Average line darkness
+           inf.f.col = "white", # Inf fill col
+           inf.b.col = "black", # Inf border col
+           avg.line.col = "black", # avg line col
+           point.pch = 20, #point shape
+           point.col = "black", #point colour
+           point.cex = 1, #point size
+           gl.col = "#FFCCFF", #gridlines and colour
+           yaxt ="n", # remove the automatic scale on the axis Y
+           quant = c(.05, .95) #set the quantile, here within 5% on each side to indicate outliers
+           )
+axis(2, at = seq(45, 100, by = 10)) #set the numbers on the y axis
+
+```
+  
+\newline  
+  
+**Comments:** There is a significant statistical difference in participant accuracy during the last 40 trials of intervention. This might be to some extent driven by the outlier in the eye-tracker group. The effect could also be exacerbated by age differences between the two groups (the touch screen group is mostly from grade 1 and the eye-tracker group is mostly from grade 0). Older children might just perform better regardless of what the intervention was.  
+  
+<br> 
+  
+#### Intervention Correct Answer Reaction Time Comparison  
+This is the time from stimulus onset to response.  
+  
+<br>  
+  
+```{r int_RT}
+int_RT_TS <- df_inc$Train_corr_RT_cor[df_inc$Cond == 'TS' & df_inc$Train_eprime_rt_reliability == 1]
+int_RT_ET <- df_inc$Train_corr_RT_cor[df_inc$Cond == 'ET']
+
+int_RT_test <- wilcox.test(int_RT_TS, int_RT_ET)
+int_RT_test
+```
+\newline  
+  
+Corrected p-value: `r int_RT_test$p.value*3`
+  
+\newline  
+  
+```{r int_RT_plot}
+#got to get rid of the two participants with unreliable data
+df_inc_RT <- filter(df_inc, Train_eprime_rt_reliability == 1)
+
+pirateplot(formula = Train_corr_RT~Cond, #which variables are you using
+           data = df_inc_RT,
+           theme = 0, #check out different themes in the guide page linked at the top, theme 0 is starting from scratch
+           main = "Intervention Correct RT", #title of the graph
+           par(cex.main = 1.2), #set the size of your title
+           xlab="Intervention Group", #label of the x axis
+           ylab="RT ms", #label of the y axis
+           cex.lab = 1.2, #size of the axis labels
+           pal = "basel", # color palette, look at the instruction link to identify different palettes
+           inf.method = 'hdi', # method of inference - either High Density Interval (hdi, from Bayesian stats), or standard Confidence Interval (ci)
+           bean.f.o = 0.5, # Bean fill darkness
+           point.o = .3, # points darkness
+           inf.f.o = .5, # Inference fill
+           inf.b.o = .5, # Inference border
+           avg.line.o = 0.7, # Average line darkness
+           inf.f.col = "white", # Inf fill col
+           inf.b.col = "black", # Inf border col
+           avg.line.col = "black", # avg line col
+           point.pch = 20, #point shape
+           point.col = "black", #point colour
+           point.cex = 1, #point size
+           gl.col = "#FFCCFF", #gridlines and colour
+           yaxt ="n", # remove the automatic scale on the axis Y
+           quant = c(.05, .95) #set the quantile, here within 5% on each side to indicate outliers
+           )
+axis(2, at = seq(1600, 3500, by = 400)) #set the numbers on the y axis
+
+```
+  
+\newline  
+  
+**Comments:** The touch screen group seems to have slower reaction times which is fair enough because they perform movements. This is not significant though.  
+  
+<br> 
+  
+#### Intervention Correct Answer Decision Time Comparison  
+This is the time from stimulus onset to space bar release.
+  
+<br> 
+  
+```{r int_DT}
+int_DT_TS <- df_inc$Train_corr_DT_cor[df_inc$Cond == 'TS' & df_inc$Train_eprime_rt_reliability == 1]
+int_DT_ET <- df_inc$Train_corr_DT_cor[df_inc$Cond == 'ET']
+
+int_DT_test <- wilcox.test(int_DT_TS, int_DT_ET)
+int_DT_test
+```
+\newline  
+  
+Corrected p-value: `r int_DT_test$p.value*3`
+ 
+\newline  
+  
+```{r int_DT_plot}
+
+pirateplot(formula = Train_corr_DT~Cond, #which variables are you using
+           data = df_inc_RT,
+           theme = 0, #check out different themes in the guide page linked at the top, theme 0 is starting from scratch
+           main = "Intervention Correct DT", #title of the graph
+           par(cex.main = 1.2), #set the size of your title
+           xlab="Intervention Group", #label of the x axis
+           ylab="DT ms", #label of the y axis
+           cex.lab = 1.2, #size of the axis labels
+           pal = "basel", # color palette, look at the instruction link to identify different palettes
+           inf.method = 'hdi', # method of inference - either High Density Interval (hdi, from Bayesian stats), or standard Confidence Interval (ci)
+           bean.f.o = 0.5, # Bean fill darkness
+           point.o = .3, # points darkness
+           inf.f.o = .5, # Inference fill
+           inf.b.o = .5, # Inference border
+           avg.line.o = 0.7, # Average line darkness
+           inf.f.col = "white", # Inf fill col
+           inf.b.col = "black", # Inf border col
+           avg.line.col = "black", # avg line col
+           point.pch = 20, #point shape
+           point.col = "black", #point colour
+           point.cex = 1, #point size
+           gl.col = "#FFCCFF", #gridlines and colour
+           yaxt ="n", # remove the automatic scale on the axis Y
+           quant = c(.05, .95) #set the quantile, here within 5% on each side to indicate outliers
+           )
+axis(2, at = seq(1300, 2900, by = 400)) #set the numbers on the y axis
+
+```
+  
+\newline  
+  
+**Comments:** Decision time seems to be comparable between the two groups.  
+
+
+# b/d Test Results  
+  
+One participant was removed from RT analyses in the eye-tracker group as it was not possible to correctly record their RT in the post test.  
+One participant was removed from Accuracy analyses in the eye-tracker group as it was not possible to correctly record their responses with the eye-tracker.  
+  
+```{r test_data}
+`Pre Test Accuracy` <- c(mean(df_inc$Pre_acc[df_inc$Cond == 'TS']), mean(df_inc$Pre_acc[df_inc$Cond == 'ET']))
+`Post Test Accuracy` <- c(mean(df_inc$Post_acc[df_inc$Cond == 'TS']), mean(df_inc$Post_acc[df_inc$Cond == 'ET'], na.rm = TRUE))
+`Accuracy Improvement` <- c(sum(mean(df_inc$Post_acc[df_inc$Cond == 'TS'])-mean(df_inc$Pre_acc[df_inc$Cond == 'TS'])), sum(mean(df_inc$Post_acc[df_inc$Cond == 'ET'], na.rm = TRUE)-mean(df_inc$Pre_acc[df_inc$Cond == 'ET'])))
+
+`Pre Test RT` <- c(mean(df_inc$Pre_corr_RT[df_inc$Cond == 'TS']), mean(df_inc$Pre_corr_RT[df_inc$Cond == 'ET']))
+`Post Test RT` <-  c(mean(df_inc$Post_corr_RT[df_inc$Cond == 'TS']), mean(df_inc$Post_corr_RT[df_inc$Cond == 'ET'], na.rm = TRUE))
+`RT Improvement` <- c(sum(mean(df_inc$Post_corr_RT[df_inc$Cond == 'TS']) - mean(df_inc$Pre_corr_RT[df_inc$Cond == 'TS'])), sum(mean(df_inc$Post_corr_RT[df_inc$Cond == 'ET'], na.rm = TRUE) - mean(df_inc$Pre_corr_RT[df_inc$Cond == 'ET'])))
+
+test <- as.data.frame(rbind(`Pre Test Accuracy`,`Post Test Accuracy`,`Accuracy Improvement`,`Pre Test RT`,`Post Test RT`,`RT Improvement`))
+
+colnames(test) <- c('Touch Screen', 'Eye Tracker')
+
+kable(test, digits = 2)
+```
+
+  
+\newline  
+  
+**Comments:** From the table it is evident that children in the eye tracker group were generally less accurate and slower in the pre-test which might be due to the fact that they were generally younger. This means that there is more room for improvement in this group as well.  
+  
+<br> 
+  
+#### Accuracy Change  
+  
+<br>  
+  
+```{r test_acc}
+#create a change variable
+df_inc$acc_change <- df_inc$Post_acc - df_inc$Pre_acc
+test_acc_TS <- df_inc$acc_change[df_inc$Cond == 'TS']
+test_acc_ET <- df_inc$acc_change[df_inc$Cond == 'ET']
+
+test_acc_test <- wilcox.test(test_acc_TS, test_acc_ET)
+test_acc_test
+``` 
+\newline  
+  
+Corrected p-value: `r test_acc_test$p.value*2`
+ 
+\newline  
+  
+An individual plot for accuracy change. 
+  
+```{r test_acc_plot}
+#restructure the data for the plot
+#df_plot <- data.frame(1:32)
+#df_plot$acc[1:16] <- df_inc$Pre_acc
+#df_plot$rt[1:16] <- df_inc$Pre_corr_RT
+#df_plot$time = 'pre'
+#df_plot$cond = df_inc$Cond
+#df_plot$acc[17:32] <- df_inc$Post_acc
+#df_plot$rt[17:32] <- df_inc$Post_corr_RT
+#df_plot$time[17:32] <- 'post'
+
+
+ggplot(df_inc) + 
+  geom_segment(aes(x = 1, xend = 2, y = Pre_acc, yend = Post_acc, col = Cond)) + 
+  theme_bw() + 
+  scale_x_discrete(
+    breaks = c("1", "2"),
+    labels = c("Before", "After"),
+    limits = factor(c(1, 2))
+  )  + 
+  labs(y = "Accuracy Change")
+
+```
+  
+\newline  
+  
+**Comments:** From the individual plot, we can see that the eye-tracker group is much more variable in their performance before and after, whereas the touch-screen group are pretty consistent. The overall change in accuracy is pretty similar between the two groups and not statistically different.    
+  
+<br> 
+  
+#### Reaction Time Changes  
+  
+<br>  
+  
+```{r test_rt}
+#create a change variable
+df_inc$rt_change <- df_inc$Post_corr_RT - df_inc$Pre_corr_RT
+test_rt_TS <- df_inc$rt_change[df_inc$Cond == 'TS']
+test_rt_ET <- df_inc$rt_change[df_inc$Cond == 'ET']
+
+test_rt_test <- wilcox.test(test_rt_TS, test_rt_ET)
+test_rt_test
+``` 
+  
+\newline  
+  
+Corrected p-value: `r test_rt_test$p.value*2`
+ 
+\newline  
+  
+An individual plot for RT change. 
+  
+```{r test_RT_plot}
+
+ggplot(df_inc) + 
+  geom_segment(aes(x = 1, xend = 2, y = Pre_corr_RT, yend = Post_corr_RT, col = Cond)) + 
+  theme_bw() + 
+  scale_x_discrete(
+    breaks = c("1", "2"),
+    labels = c("Before", "After"),
+    limits = factor(c(1, 2))
+  )  + 
+  labs(y = "RT Change")
+```
+  
+\newline  
+  
+**Comments:** Here again, the eye-tracker group is more variable compared to the touch-screen group. They seem to make a better improvement in their reaction times but they also had more room for improvement compared to the touch-screen group. The difference is however non significant and this is probably due to the outlier that had longer reaction time in the post-test in the eye-tracker group.  
+  
+
+# Confounds - correlations  
+  
+The effects of confounds are not corrected with Bonferroni Correction because this is a check to understand the characteristics of the data (rather than to make assumptions about the population).  
+  
+```{r conf_year}
+
+# Accuracy & Age
+int_acc_age_cor <- cor.test(df_inc$School_year, df_inc$Train_acc, method = c("pearson"))
+test_acc_age_cor <- cor.test(df_inc$School_year, df_inc$acc_change, method = c("pearson"))
+
+# Accuracy & Gender
+df_inc$sex_dum[df_inc$Sex == "M"] <- 1 
+df_inc$sex_dum[df_inc$Sex == "F"] <- 0 
+
+int_acc_sex_cor <- cor.test(df_inc$sex_dum, df_inc$Train_acc, method = c("pearson"))
+test_acc_sex_cor <- cor.test(df_inc$sex_dum, df_inc$acc_change, method = c("pearson"))
+
+# Reaction Time & Age
+#two participants were removed from RT analyses in interventions
+int_RT <- df_inc$Train_corr_RT[df_inc$Train_eprime_rt_reliability == 1]
+int_RT_age <- df_inc$School_year[df_inc$Train_eprime_rt_reliability == 1]
+int_RT_sex <- df_inc$sex_dum[df_inc$Train_eprime_rt_reliability == 1]
+
+int_rt_age_cor <- cor.test(int_RT_age, int_RT, method = c("pearson"))
+test_rt_age_cor <- cor.test(df_inc$School_year, df_inc$rt_change, method = c("pearson"))
+
+# Reaction Time & Sex
+int_rt_sex_cor <- cor.test(int_RT_sex, int_RT, method = c("pearson"))
+test_rt_sex_cor <- cor.test(df_inc$sex_dum, df_inc$rt_change, method = c("pearson"))
+
+`Intervention Accuracy & Grade` <- c(sum(int_acc_age_cor$estimate), int_acc_age_cor$p.value)
+`Intervention Accuracy & Sex` <- c(sum(int_acc_sex_cor$estimate), int_acc_sex_cor$p.value)
+`Intervention RT & Grade` <- c(sum(int_rt_age_cor$estimate), int_rt_age_cor$p.value)
+`Intervention RT & Sex` <- c(sum(int_rt_sex_cor$estimate), int_rt_sex_cor$p.value)
+
+`Pre-Post Accuracy & Grade` <- c(sum(test_acc_age_cor$estimate), test_acc_age_cor$p.value)
+`Pre-Post Accuracy & Sex` <- c(sum(test_acc_sex_cor$estimate), test_acc_sex_cor$p.value)
+`Pre-Post RT & Grade` <- c(sum(test_rt_age_cor$estimate), test_rt_age_cor$p.value)
+`Pre-Post RT & Sex` <- c(sum(test_rt_sex_cor$estimate), test_rt_sex_cor$p.value)
+
+confounds <- as.data.frame(rbind(`Intervention Accuracy & Grade`, `Intervention Accuracy & Sex`, `Intervention RT & Grade`, `Intervention RT & Sex`, `Pre-Post Accuracy & Grade`, `Pre-Post Accuracy & Sex`, `Pre-Post RT & Grade`, `Pre-Post RT & Sex`))
+colnames(confounds) <- c('Correlation', 'p-value')
+confounds$sig[confounds$`p-value` < 0.05] <- '*' #add affitional colums to the data frame where you can mark significance, in all rows, if the displayed p-value is below 0.05, the column will be marked with a star
+confounds$sig[confounds$`p-value` > 0.05] <- ' ' #otherwise that column will be empty
+colnames(confounds) <- c('Correlation', 'p-value', '') #add a name for that column but keep it empty
+
+kable(confounds, digits = 3) #make the table with numbers displayed up to 3 decimal places
+```
+  
+**Comments** Age is a significant confound for RT during the intervention. Girls are significantly slower than boys. Plot below. Females were also generally older.   
+
+```{r RT_sex}
+int_RT_sexL <- df_inc$Sex[df_inc$Train_eprime_rt_reliability == 1]
+int_RT_years <- df_inc$Age[df_inc$Train_eprime_rt_reliability == 1]
+
+pirateplot(formula = int_RT~int_RT_sexL, #which variables are you using
+           data = df_inc_RT,
+           theme = 0, #check out different themes in the guide page linked at the top, theme 0 is starting from scratch
+           main = "Intervention RT", #title of the graph
+           par(cex.main = 1.2), #set the size of your title
+           xlab="Intervention Group", #label of the x axis
+           ylab="RT ms", #label of the y axis
+           cex.lab = 1.2, #size of the axis labels
+           pal = "basel", # color palette, look at the instruction link to identify different palettes
+           inf.method = 'hdi', # method of inference - either High Density Interval (hdi, from Bayesian stats), or standard Confidence Interval (ci)
+           bean.f.o = 0.5, # Bean fill darkness
+           point.o = .3, # points darkness
+           inf.f.o = .5, # Inference fill
+           inf.b.o = .5, # Inference border
+           avg.line.o = 0.7, # Average line darkness
+           inf.f.col = "white", # Inf fill col
+           inf.b.col = "black", # Inf border col
+           avg.line.col = "black", # avg line col
+           point.pch = 20, #point shape
+           point.col = "black", #point colour
+           point.cex = 1, #point size
+           gl.col = "#FFCCFF", #gridlines and colour
+           yaxt ="n", # remove the automatic scale on the axis Y
+           quant = c(.05, .95) #set the quantile, here within 5% on each side to indicate outliers
+           )
+axis(2, at = seq(1600, 3500, by = 400)) #set the numbers on the y axis
+
+
+pirateplot(formula = int_RT_years~int_RT_sexL, #which variables are you using
+           data = df_inc_RT,
+           theme = 0, #check out different themes in the guide page linked at the top, theme 0 is starting from scratch
+           main = "Intervention RT", #title of the graph
+           par(cex.main = 1.2), #set the size of your title
+           xlab="Intervention Group", #label of the x axis
+           ylab="Age in Years", #label of the y axis
+           cex.lab = 1.2, #size of the axis labels
+           pal = "basel", # color palette, look at the instruction link to identify different palettes
+           inf.method = 'hdi', # method of inference - either High Density Interval (hdi, from Bayesian stats), or standard Confidence Interval (ci)
+           bean.f.o = 0.5, # Bean fill darkness
+           point.o = .3, # points darkness
+           inf.f.o = .5, # Inference fill
+           inf.b.o = .5, # Inference border
+           avg.line.o = 0.7, # Average line darkness
+           inf.f.col = "white", # Inf fill col
+           inf.b.col = "black", # Inf border col
+           avg.line.col = "black", # avg line col
+           point.pch = 20, #point shape
+           point.col = "black", #point colour
+           point.cex = 1, #point size
+           gl.col = "#FFCCFF", #gridlines and colour
+           yaxt ="n", # remove the automatic scale on the axis Y
+           quant = c(.05, .95) #set the quantile, here within 5% on each side to indicate outliers
+           )
+axis(2, at = seq(6, 8, by = 1)) #set the numbers on the y axis
+
+```
