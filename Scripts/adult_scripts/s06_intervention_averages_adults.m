@@ -134,7 +134,7 @@ ft_multiplotER(cfg, ERP_ET_av, ERP_TS_av);
 cfg = [];
 cfg.layout = layout_file;
 cfg.showlabels = 'yes';
-ft_multiplotER(cfg, all_TS_ERP{1}, all_ET_ERP{1});
+ft_multiplotER(cfg, all_TS_ERP{4}, all_ET_ERP{4}); %possibly do 4 for the workshop
 
 
 
