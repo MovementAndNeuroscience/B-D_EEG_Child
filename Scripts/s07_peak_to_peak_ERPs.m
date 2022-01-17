@@ -5,16 +5,16 @@
 % pre-intervention
 
 % Call the configuration script 
-cd('I:\SCIENCE-NEXS-neurolab\PROJECTS\PLAYMORE\EEG_project1\Analyses\Scripts');
+cd('I:\SCIENCE-NEXS-neurolab\PROJECTS\PLAYMORE\EEG_project1\Analyses\B-D_EEG_Repo\Scripts');
 configuration
 
 % Load the pre- and post-intervention data
-cd('I:\SCIENCE-NEXS-neurolab\PROJECTS\PLAYMORE\EEG_project1\Analyses\Data\Pre_post');
+cd('I:\SCIENCE-NEXS-neurolab\PROJECTS\PLAYMORE\EEG_project1\Analyses\B-D_EEG_Repo\Results\Pre_post');
 ET_P300_Pre = importdata('ET_P300_Pre.mat');
 ET_P300_Post = importdata('ET_P300_Post.mat');
 TS_P300_Pre = importdata('TS_P300_Pre.mat');
 TS_P300_Post = importdata('TS_P300_Post.mat');
-cd('I:\SCIENCE-NEXS-neurolab\PROJECTS\PLAYMORE\EEG_project1\Analyses\Data\Intervention');
+cd('I:\SCIENCE-NEXS-neurolab\PROJECTS\PLAYMORE\EEG_project1\Analyses\B-D_EEG_Repo\Results\Intervention');
 ET_ERP_Int = importdata('ET_ERP_Int.mat');
 TS_ERP_Int = importdata('TS_ERP_Int.mat');
 
@@ -81,6 +81,9 @@ selected = ft_selectdata(cfg, TS_P300_Pre{9});
 %% INTERVENTION PEAK
 %select the P300 window at 100-400ms Fz channel only
 
+%here the window might need to be shortened for the minimum because there
+%are two negative peaks in some participants
+
 for k=1:length(ET_ERP_Int)
 
 cfg = [];
@@ -130,8 +133,14 @@ end
 
 cfg = [];
 cfg.channel = 'Fz';
-cfg.latency = [0.08 0.25];
-selected = ft_selectdata(cfg, TS_ERP_Int{k}); 
+cfg.latency = [0.08 0.26];
+selected = ft_selectdata(cfg, ET_ERP_Int{k}); 
+
+cfg = [];
+cfg.layout = layout_file;
+cfg.showlabels = 'yes';
+ft_multiplotER(cfg, selected);
+
 
 
 writetable(struct2table(peaks), 'peaks.csv')

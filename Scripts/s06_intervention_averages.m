@@ -4,14 +4,16 @@
 % see what the activity looks like
 
 % Call the configuration script 
-cd('I:\SCIENCE-NEXS-neurolab\PROJECTS\PLAYMORE\EEG_project1\Analyses\Scripts');
+cd('I:\SCIENCE-NEXS-neurolab\PROJECTS\PLAYMORE\EEG_project1\Analyses\B-D_EEG_Repo\Scripts');
 configuration
 
-cd('I:\SCIENCE-NEXS-neurolab\PROJECTS\PLAYMORE\EEG_project1\Analyses\Data\Intervention');
+cd('I:\SCIENCE-NEXS-neurolab\PROJECTS\PLAYMORE\EEG_project1\Analyses\B-D_EEG_Repo\Results\Intervention');
 all_Int_theta = importdata('all_Theta_Int.mat');
 all_Int_alpha = importdata('all_Alpha_Int.mat');
 all_Int_beta = importdata('all_Beta_Int.mat');
 all_Int_ERP = importdata('all_ERP_Int.mat');
+
+outputpath = ('I:\SCIENCE-NEXS-neurolab\PROJECTS\PLAYMORE\EEG_project1\Analyses\B-D_EEG_Repo\Results\Intervention');
 
 %% TOOLS
 %ERP Plot
@@ -223,8 +225,8 @@ end
 
 
 %--------------Grand Average
-cfg = [];
-ERP_Int_all_av = ft_timelockgrandaverage(cfg, all_Int_ERP{:});
+%cfg = [];
+%ERP_Int_all_av = ft_timelockgrandaverage(cfg, all_Int_ERP{:});
 
 cfg = [];
 ERP_Int_all_av_noage = ft_timelockgrandaverage(cfg, all_Int_ERP_noage{:});
@@ -238,8 +240,8 @@ ft_multiplotER(cfg, ERP_Int_all_av_noage);
 %Grand averages for groups
 
 %devide by intervention
-ET_ERP_Int = all_Int_ERP([subjects.group] == 2);
-TS_ERP_Int = all_Int_ERP([subjects.group] == 1);
+%ET_ERP_Int = all_Int_ERP([subjects.group] == 2);
+%TS_ERP_Int = all_Int_ERP([subjects.group] == 1);
 
 ET_ERP_Int_noage = all_Int_ERP_noage([subjects.group] == 2);
 TS_ERP_Int_noage = all_Int_ERP_noage([subjects.group] == 1);
@@ -250,8 +252,8 @@ save(fullfile(outputpath, 'TS_ERP_Int.mat'), 'TS_ERP_Int');
 
 
 %ET
-cfg = [];
-ET_ERP_Int = ft_timelockgrandaverage(cfg, ET_ERP_Int{:});
+%cfg = [];
+%ET_ERP_Int = ft_timelockgrandaverage(cfg, ET_ERP_Int{:});
 
 cfg = [];
 ET_ERP_Int_noage = ft_timelockgrandaverage(cfg, ET_ERP_Int_noage{:});
@@ -264,8 +266,8 @@ ft_multiplotER(cfg, ET_ERP_Int, ET_ERP_Int_noage);
 
 
 %TS
-cfg = [];
-TS_ERP_Int = ft_timelockgrandaverage(cfg, TS_ERP_Int{:});
+%cfg = [];
+%TS_ERP_Int = ft_timelockgrandaverage(cfg, TS_ERP_Int{:});
 
 cfg = [];
 TS_ERP_Int_noage = ft_timelockgrandaverage(cfg, TS_ERP_Int_noage{:});
