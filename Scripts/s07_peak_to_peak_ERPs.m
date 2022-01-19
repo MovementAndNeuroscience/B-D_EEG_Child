@@ -130,18 +130,34 @@ peaks(k+9).int = max(selected.avg) - min(selected.avg);
 
 end
 
+%after checking the min values, re-calculate the peak to peak
 
-cfg = [];
-cfg.channel = 'Fz';
-cfg.latency = [0.1 0.3];
-selected = ft_selectdata(cfg, TS_ERP_Int_noage{k}); 
+for j = 1:length(peaks)
+    peaks(j).int = peaks(j).int_max - peaks(j).int_min;
+end 
 
-cfg = [];
-cfg.layout = layout_file;
-cfg.showlabels = 'yes';
-ft_multiplotER(cfg, selected);
-
-
+%save the table
 writetable(struct2table(peaks), 'peaks.csv')
+%save the structure
+save(fullfile(outputpath, 'peaks.mat'), 'peaks');
+
+% run stats on the peak-to-peak
+x = [peaks(1:9).int];
+y = [peaks(10:18).int];
+
+mean(x)
+mean(y)
+
+[h,p,ci,stats] = ttest2(x,y)
 
 
+% run stats on the max peak only
+x = [peaks(1:9).int_max];
+y = [peaks(10:18).int_max];
+
+mean(x)
+mean(y)
+
+[h,p,ci,stats] = ttest2(x,y)
+
+%non significant
