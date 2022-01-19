@@ -21,7 +21,7 @@ cfg = [];
 %cfg.latency = [0.2 0.4];
 cfg.showlabels = 'yes';
 cfg.layout = layout_file;
-ft_multiplotER(cfg, all_Int_ERP{23});
+ft_multiplotER(cfg, TS_ERP_Int_noage{6});
 
 %TFR Plot
 cfg = [];
@@ -41,7 +41,7 @@ ft_multiplotER(cfg, Int_beta);
 for k=1:length(subjects)
     %get all the data
     datapath = subjects(k).folder;
-    outputpath = 'I:\SCIENCE-NEXS-neurolab\PROJECTS\PLAYMORE\EEG_project1\Analyses\Data\Intervention';
+    outputpath = 'I:\SCIENCE-NEXS-neurolab\PROJECTS\PLAYMORE\EEG_project1\Analyses\B-D_EEG_Repo\Results\Intervention';
     cd(datapath);
     
     %Current file info
@@ -81,22 +81,7 @@ for k=1:length(subjects)
   save(fullfile(outputpath, 'all_ERP_int.mat'), 'all_Int_ERP');
   save(fullfile(outputpath, 'all_ERP_subjects.mat'), 'all_ERP_subjects');
   
-for k=1:length(subjects)
-    %get all the data
-    datapath = subjects(k).folder;
-    outputpath = 'I:\SCIENCE-NEXS-neurolab\PROJECTS\PLAYMORE\EEG_project1\Analyses\Data\Intervention';
-    cd(datapath);
-    
-    %Current file info
-    fprintf('Working on %s\n', num2str(subjects(k).name))
-    
-    %Files 
-    currentFolder = dir;
-    
-    %Data Intervention
-    mydata_int_clean_file = dir('*int_clean*.mat');
-    mydata_int_clean = importdata(mydata_int_clean_file.name);
-    
+
     
   
  %%                                         TFR
@@ -286,7 +271,7 @@ ET_ERP_Int_noage.mask = stats.mask;
 cfg = [];
 cfg.layout = layout_file;
 cfg.showlabels = 'yes';
-%cfg.xlim = [0.2 0.25]; 
+%cfg.xlim = [0.15 0.3]; 
 %cfg.channel = [49 50 52];
 %cfg.maskparameter = 'mask';  % use the thresholded probability to mask the data
 %cfg.maskstyle     = 'box';

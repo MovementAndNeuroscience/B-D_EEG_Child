@@ -2,7 +2,7 @@
 % August 2021
 
 % Call the configuration script 
-cd('I:\SCIENCE-NEXS-neurolab\PROJECTS\PLAYMORE\EEG_project1\Analyses\Scripts');
+cd('I:\SCIENCE-NEXS-neurolab\PROJECTS\PLAYMORE\EEG_project1\Analyses\B-D_EEG_Repo\Scripts');
 configuration
 
 %% Open the folder for each participant
@@ -14,7 +14,7 @@ configuration
 k = 1;
 
 datapath = subjects(k).folder ; %address of the folder
-outputpath = ('I:\SCIENCE-NEXS-neurolab\PROJECTS\PLAYMORE\EEG_project1\Analyses\Data\Qual_Figs'); %this is were quality figures will go at the end
+outputpath = ('I:\SCIENCE-NEXS-neurolab\PROJECTS\PLAYMORE\EEG_project1\Analyses\B-D_EEG_Repo\Results\Qual_Figs'); %this is were quality figures will go at the end
 cd(datapath); %change the working directory to the address specified above
 
 
@@ -285,7 +285,7 @@ ft_databrowser(cfg, comp_int);
 
 
 %% Remove Components 
-reject_comp = [11]; %list the components selected for removal
+reject_comp = [1 16 25]; %list the components selected for removal
 
 cfg = [];
 cfg.component = reject_comp;

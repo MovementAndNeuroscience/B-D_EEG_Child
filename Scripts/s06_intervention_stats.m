@@ -25,8 +25,8 @@ TS_Alpha_Int = importdata('TS_Alpha_Int.mat');
 %% Prepare the groups
 
 % Place the group value in a separate array 
-group = ones(1, (length(TS_Theta_Int_noage)+length(ET_Theta_Int_noage)));
-group((length(TS_Theta_Int_noage)+1): end) = 2;
+group = ones(1, (length(TS_ERP_Int_noage)+length(ET_ERP_Int_noage)));
+group((length(TS_ERP_Int_noage)+1): end) = 2;
 
 %% Setup study design 
 % Define the study design: in this example it is a between-group t-test.
@@ -44,7 +44,7 @@ design = [group; uvar]';
 %The latency of the comparison can be adjusted depending on which ERP peak
 %is to be compared, otherwise, the whole time window will be compared
 
-cd('I:\SCIENCE-NEXS-neurolab\PROJECTS\PLAYMORE\EEG_project1\Analyses\Data\Stats');
+cd('I:\SCIENCE-NEXS-neurolab\PROJECTS\PLAYMORE\EEG_project1\Analyses\B-D_EEG_Repo\Results\Stats');
 
 cfg = [];
 cfg.method              = 'montecarlo'; 
@@ -55,15 +55,15 @@ cfg.clusterstatistic    = 'maxsum';
 cfg.tail                = 0;
 cfg.clustertail         = 0;            % = two-tailed hypothesis
 cfg.alpha               = 0.025;        % = 0.05/2 for two-tailed hypothesis
-cfg.channel             = [49 50 52]; %[12 13 14 21 22 23];  %[49 50 52] %'Fz'; %AFz, Fz, FCz [6 13 22] [5 6 7 12 13 14 21 22 23] [12 13 14 21 22 23 30 31 32]
-cfg.latency             = [0.20 0.25]; 
-cfg.numrandomization    = 2000;
+cfg.channel             = [21 22 23]; %[49 50 52]; %[12 13 14 21 22 23];  %[49 50 52] %'Fz'; %AFz, Fz, FCz [6 13 22] [5 6 7 12 13 14 21 22 23] [12 13 14 21 22 23 30 31 32]
+cfg.latency             = [0.15 0.3]; 
+cfg.numrandomization    = 1000;
 cfg.neighbours          = neighbours;
 cfg.design              = design;
 cfg.ivar                = 1; %group identifier specifies the column in the matrix "design" which is the independent variable
 stats = ft_timelockstatistics(cfg, TS_ERP_Int_noage{:}, ET_ERP_Int_noage{:}); % or ft_timelockstatistics(cfg, alldata_group1{:}, alldata_group2{:})
 
-save stats_N200_int stats;
+save stats_P300_int stats;
 
 clear design
 
