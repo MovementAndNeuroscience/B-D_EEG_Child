@@ -111,13 +111,14 @@ Yclean = dat - model
 df_inc$Train_corr_DT_cor <- Yclean
 
 #select the data for accuracy and rt 
-df_inc_acc <- filter(df_inc, Train_eprime_acc_reliability == "1")
+#df_inc_acc <- filter(df_inc, Train_eprime_acc_reliability == "1")
+df_inc_acc <- df_inc
 df_inc_rt <- filter(df_inc, Train_eprime_rt_reliability == "1")
-`Training Accuracy Mean` <- c(mean(df_inc$Train_acc[df_inc$Cond == "TS"]), mean(df_inc$Train_acc[df_inc$Cond == "ET"]))
-`Training Accuracy Min` <- c(min(df_inc$Train_acc[df_inc$Cond == "TS"]), min(df_inc$Train_acc[df_inc$Cond == "ET"]))
-`Training Accuracy Max` <- c(max(df_inc$Train_acc[df_inc$Cond == "TS"]), max(df_inc$Train_acc[df_inc$Cond == "ET"]))
-`Training Correct RT` <- c(mean(df_inc$Train_corr_RT[df_inc$Cond == "TS" & df_inc$Train_eprime_rt_reliability == 1]), mean(df_inc$Train_corr_RT[df_inc$Cond == "ET"])) 
-`Training Correct DT` <- c(mean(df_inc$Train_corr_DT[df_inc$Cond == "TS" & df_inc$Train_eprime_rt_reliability == 1]), mean(df_inc$Train_corr_DT[df_inc$Cond == "ET"]))
+`Training Accuracy Mean` <- c(mean(df_inc$Train_acc_cor[df_inc$Cond == "TS"]), mean(df_inc$Train_acc_cor[df_inc$Cond == "ET"]))
+`Training Accuracy Min` <- c(min(df_inc$Train_acc_cor[df_inc$Cond == "TS"]), min(df_inc$Train_acc_cor[df_inc$Cond == "ET"]))
+`Training Accuracy Max` <- c(max(df_inc$Train_acc_cor[df_inc$Cond == "TS"]), max(df_inc$Train_acc_cor[df_inc$Cond == "ET"]))
+`Training Correct RT` <- c(mean(df_inc$Train_corr_RT_cor[df_inc$Cond == "TS" & df_inc$Train_eprime_rt_reliability == 1]), mean(df_inc$Train_corr_RT_cor[df_inc$Cond == "ET"])) 
+`Training Correct DT` <- c(mean(df_inc$Train_corr_DT_cor[df_inc$Cond == "TS" & df_inc$Train_eprime_rt_reliability == 1]), mean(df_inc$Train_corr_DT_cor[df_inc$Cond == "ET"]))
 
 training <- as.data.frame(rbind(`Training Accuracy Mean`, `Training Accuracy Min`, `Training Accuracy Max`, `Training Correct RT`, `Training Correct DT`))
 
@@ -140,6 +141,16 @@ int_acc_ET <- df_inc$Train_acc_cor[df_inc$Cond == 'ET']
 int_acc_test <- wilcox.test(int_acc_TS, int_acc_ET)
 int_acc_test                           
 ```
+
+```{r save_acc}
+setwd('I:/SCIENCE-NEXS-neurolab/PROJECTS/PLAYMORE/EEG_project1/Analyses/B-D_EEG_Repo/Results')
+
+acc_data <- select(df_inc_acc, Train_acc_cor, ID, Cond)
+
+write.csv(acc_data, file = "accuracy_data.csv")
+
+```
+
 \newline  
   
 Corrected p-value: `r int_acc_test$p.value*3` 
