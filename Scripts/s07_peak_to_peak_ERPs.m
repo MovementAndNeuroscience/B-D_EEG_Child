@@ -84,12 +84,12 @@ selected = ft_selectdata(cfg, TS_P300_Pre{9});
 %here the window might need to be shortened for the minimum because there
 %are two negative peaks in some participants
 
-for k=1:length(ET_ERP_Int)
+for k=1:length(ET_ERP_Int_noage)
 
 cfg = [];
 cfg.channel = 'Fz';
 cfg.latency = [0.1 0.4];
-selected = ft_selectdata(cfg, ET_ERP_Int{k}); 
+selected = ft_selectdata(cfg, ET_ERP_Int_noage{k}); 
 
 cfg = [];
 cfg.layout = layout_file;
@@ -108,12 +108,12 @@ end
 
 
 
-for k=1:length(TS_ERP_Int)
+for k=1:length(TS_ERP_Int_noage)
 
 cfg = [];
 cfg.channel = 'Fz';
 cfg.latency = [0.1 0.35];
-selected = ft_selectdata(cfg, TS_ERP_Int{k}); 
+selected = ft_selectdata(cfg, TS_ERP_Int_noage{k}); 
 
 cfg = [];
 cfg.layout = layout_file;
@@ -133,8 +133,8 @@ end
 
 cfg = [];
 cfg.channel = 'Fz';
-cfg.latency = [0.08 0.26];
-selected = ft_selectdata(cfg, ET_ERP_Int{k}); 
+cfg.latency = [0.1 0.3];
+selected = ft_selectdata(cfg, TS_ERP_Int_noage{k}); 
 
 cfg = [];
 cfg.layout = layout_file;
@@ -142,6 +142,6 @@ cfg.showlabels = 'yes';
 ft_multiplotER(cfg, selected);
 
 
-
 writetable(struct2table(peaks), 'peaks.csv')
+
 

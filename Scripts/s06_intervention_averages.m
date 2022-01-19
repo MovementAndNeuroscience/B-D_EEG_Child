@@ -247,8 +247,8 @@ ET_ERP_Int_noage = all_Int_ERP_noage([subjects.group] == 2);
 TS_ERP_Int_noage = all_Int_ERP_noage([subjects.group] == 1);
 
 
-save(fullfile(outputpath, 'ET_ERP_Int.mat'), 'ET_ERP_Int');
-save(fullfile(outputpath, 'TS_ERP_Int.mat'), 'TS_ERP_Int');
+save(fullfile(outputpath, 'ET_ERP_Int.mat'), 'ET_ERP_Int_noage');
+save(fullfile(outputpath, 'TS_ERP_Int.mat'), 'TS_ERP_Int_noage');
 
 
 %ET
