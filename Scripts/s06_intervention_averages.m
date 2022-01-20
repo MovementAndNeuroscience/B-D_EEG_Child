@@ -21,7 +21,7 @@ cfg = [];
 %cfg.latency = [0.2 0.4];
 cfg.showlabels = 'yes';
 cfg.layout = layout_file;
-ft_multiplotER(cfg, TS_ERP_Int_noage{6});
+ft_multiplotER(cfg, ET_ERP_Int_noage{9});
 
 %TFR Plot
 cfg = [];
@@ -82,7 +82,7 @@ for k=1:length(subjects)
   save(fullfile(outputpath, 'all_ERP_subjects.mat'), 'all_ERP_subjects');
   
 
-    
+
   
  %%                                         TFR
  %wavelet
@@ -271,18 +271,19 @@ ET_ERP_Int_noage.mask = stats.mask;
 cfg = [];
 cfg.layout = layout_file;
 cfg.showlabels = 'yes';
-%cfg.xlim = [0.15 0.3]; 
+cfg.xlim = [-0.1 0.8]; 
 %cfg.channel = [49 50 52];
 %cfg.maskparameter = 'mask';  % use the thresholded probability to mask the data
 %cfg.maskstyle     = 'box';
+cfg.linewidth = 1;
 ft_multiplotER(cfg, ET_ERP_Int_noage, TS_ERP_Int_noage);
 
 %Standardised topoplot
 cfg = [];
 cfg.layout = layout_file;
 cfg.showlabels = 'yes';
-cfg.xlim = [0.25 0.35]; %time
-cfg.ylim = [-3 4]; %amplitude
+cfg.xlim = [0.3 0.4]; %time
+cfg.zlim = [-8 10]; %amplitude
 %ft_multiplotER(cfg, TS_ERP_Int, ET_ERP_Int);
 ft_topoplotER (cfg, ET_ERP_Int_noage, TS_ERP_Int_noage);
 

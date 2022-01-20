@@ -55,8 +55,8 @@ cfg.clusterstatistic    = 'maxsum';
 cfg.tail                = 0;
 cfg.clustertail         = 0;            % = two-tailed hypothesis
 cfg.alpha               = 0.025;        % = 0.05/2 for two-tailed hypothesis
-cfg.channel             = [21 22 23]; %[49 50 52]; %[12 13 14 21 22 23];  %[49 50 52] %'Fz'; %AFz, Fz, FCz [6 13 22] [5 6 7 12 13 14 21 22 23] [12 13 14 21 22 23 30 31 32]
-cfg.latency             = [0.15 0.3]; 
+cfg.channel             = [49 50 51]; %[49 50 52]; %[12 13 14 21 22 23];  %[49 50 52] %'Fz'; %AFz, Fz, FCz [6 13 22] [5 6 7 12 13 14 21 22 23] [12 13 14 21 22 23 30 31 32]
+cfg.latency             = [0.2 0.3]; 
 cfg.numrandomization    = 1000;
 cfg.neighbours          = neighbours;
 cfg.design              = design;

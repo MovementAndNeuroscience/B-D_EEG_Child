@@ -285,7 +285,7 @@ ft_databrowser(cfg, comp_int);
 
 
 %% Remove Components 
-reject_comp = [1 16 25]; %list the components selected for removal
+reject_comp = [15 18 27]; %list the components selected for removal
 
 cfg = [];
 cfg.component = reject_comp;

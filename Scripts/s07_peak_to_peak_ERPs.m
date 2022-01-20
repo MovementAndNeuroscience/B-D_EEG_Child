@@ -225,7 +225,7 @@ mean(y)
 
 [h,p,ci,stats] = ttest(x)
  
-[p,h,stats] = signrank(x)
+[p,h,stats] = signrank(y)
 
 
 %% Mean amplitude for the period of time used in the permutation tests N200
