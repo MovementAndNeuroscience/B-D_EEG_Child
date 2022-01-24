@@ -13,15 +13,14 @@ all_Int_alpha = importdata('all_Alpha_Int.mat');
 all_Int_beta = importdata('all_Beta_Int.mat');
 all_Int_ERP = importdata('all_ERP_Int.mat');
 
-outputpath = ('I:\SCIENCE-NEXS-neurolab\PROJECTS\PLAYMORE\EEG_project1\Analyses\B-D_EEG_Repo\Results\Intervention');
-
+ 
 %% TOOLS
 %ERP Plot
 cfg = [];
 %cfg.latency = [0.2 0.4];
 cfg.showlabels = 'yes';
 cfg.layout = layout_file;
-ft_multiplotER(cfg, ET_ERP_Int_noage{4});
+ft_multiplotER(cfg, ET_ERP_Int_noage{9});
 
 %TFR Plot
 cfg = [];
@@ -82,7 +81,22 @@ for k=1:length(subjects)
   save(fullfile(outputpath, 'all_ERP_subjects.mat'), 'all_ERP_subjects');
   
 
-
+for k=1:length(subjects)
+    %get all the data
+    datapath = subjects(k).folder;
+    outputpath = 'I:\SCIENCE-NEXS-neurolab\PROJECTS\PLAYMORE\EEG_project1\Analyses\B-D_EEG_Repo\Results\Intervention';
+    cd(datapath);
+    
+    %Current file info
+    fprintf('Working on %s\n', num2str(subjects(k).name))
+    
+    %Files 
+    currentFolder = dir;
+    
+    %Data Intervention
+    mydata_int_clean_file = dir('*int_clean*.mat');
+    mydata_int_clean = importdata(mydata_int_clean_file.name);
+    
   
  %%                                         TFR
  %wavelet
@@ -282,8 +296,8 @@ ft_multiplotER(cfg, ET_ERP_Int_noage, TS_ERP_Int_noage);
 cfg = [];
 cfg.layout = layout_file;
 cfg.showlabels = 'yes';
-cfg.xlim = [0.2 0.27]; %time
-%cfg.zlim = [-8 10]; %amplitude
+cfg.xlim = [0.3 0.4]; %time
+cfg.zlim = [-8 10]; %amplitude
 %ft_multiplotER(cfg, TS_ERP_Int, ET_ERP_Int);
 ft_topoplotER (cfg, ET_ERP_Int_noage, TS_ERP_Int_noage);
 
