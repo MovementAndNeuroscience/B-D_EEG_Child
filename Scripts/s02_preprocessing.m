@@ -3,7 +3,7 @@
 % The script will fully preprocess all files pre-, post- and intervention
 
 % Call the configuration script 
-cd('I:\SCIENCE-NEXS-neurolab\PROJECTS\PLAYMORE\EEG_project1\Analyses\Scripts');
+cd('I:\SCIENCE-NEXS-neurolab\PROJECTS\PLAYMORE\EEG_project1\Analyses\B-D_EEG_Repo\Scripts');
 configuration
 
 %% Tools

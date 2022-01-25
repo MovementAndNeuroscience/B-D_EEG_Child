@@ -81,22 +81,6 @@ for k=1:length(subjects)
   save(fullfile(outputpath, 'all_ERP_subjects.mat'), 'all_ERP_subjects');
   
 
-for k=1:length(subjects)
-    %get all the data
-    datapath = subjects(k).folder;
-    outputpath = 'I:\SCIENCE-NEXS-neurolab\PROJECTS\PLAYMORE\EEG_project1\Analyses\B-D_EEG_Repo\Results\Intervention';
-    cd(datapath);
-    
-    %Current file info
-    fprintf('Working on %s\n', num2str(subjects(k).name))
-    
-    %Files 
-    currentFolder = dir;
-    
-    %Data Intervention
-    mydata_int_clean_file = dir('*int_clean*.mat');
-    mydata_int_clean = importdata(mydata_int_clean_file.name);
-    
   
  %%                                         TFR
  %wavelet
@@ -173,14 +157,14 @@ all_Int_beta = all_Int_beta([subjects.name] ~= 1001 & [subjects.name] ~= 1017 & 
 all_Int_ERP = all_Int_ERP([subjects.name] ~= 1001 & [subjects.name] ~= 1017 & [subjects.name] ~= 1026 & [subjects.name] ~= 1023 & [subjects.name] ~= 1010);
 subjects = subjects([subjects.name] ~= 1001 & [subjects.name] ~= 1017 & [subjects.name] ~= 1026 & [subjects.name] ~= 1023 & [subjects.name] ~= 1010);
 
-%all_Int_ERP{23} = [];
-%all_Int_ERP{19} = [];
-%all_Int_ERP{17} = [];
-%all_Int_ERP{8} = [];
-%all_Int_ERP{1} = [];
+%% Calculate interpolated channels
+allBadchannels = allBadchannels([subjects.name] ~= 1001 & [subjects.name] ~= 1017 & [subjects.name] ~= 1026 & [subjects.name] ~= 1023 & [subjects.name] ~= 1010);
+for k = 1:length(subjects)
+allBadchannels(k).group = subjects(k).group;
+allBadchannels(k).int_count = length(allBadchannels(k).int_channels);
+end
 
-%all_Int_ERP = all_Int_ERP(~cellfun('isempty',all_Int_ERP));
-
+sum([allBadchannels.int_count([subjects.name] ~= 1001])
  %%                                                GRAND AVERAGES 
  
  %%                                         Grand averages 
@@ -343,8 +327,8 @@ end
 
 
 %For all
-cfg = [];
-Theta_Int_all_av = ft_freqgrandaverage(cfg, all_Int_theta{:});
+%cfg = [];
+%Theta_Int_all_av = ft_freqgrandaverage(cfg, all_Int_theta{:});
 
 cfg = [];
 Theta_Int_all_av_noage = ft_freqgrandaverage(cfg, all_Int_theta_noage{:});
@@ -363,18 +347,18 @@ ft_multiplotER(cfg, Theta_Int_all_av, Theta_Int_all_av_noage);
 
 %For groups
 %devide by intervention
-ET_Theta_Int = all_Int_theta([subjects.group] == 2);
-TS_Theta_Int = all_Int_theta([subjects.group] == 1);
+%ET_Theta_Int = all_Int_theta([subjects.group] == 2);
+%TS_Theta_Int = all_Int_theta([subjects.group] == 1);
 
 ET_Theta_Int_noage = all_Int_theta_noage([subjects.group] == 2);
 TS_Theta_Int_noage = all_Int_theta_noage([subjects.group] == 1);
 
-save(fullfile(outputpath, 'ET_Theta_Int.mat'), 'ET_Theta_Int');
-save(fullfile(outputpath, 'TS_Theta_Int.mat'), 'TS_Theta_Int');
+save(fullfile(outputpath, 'ET_Theta_Int.mat'), 'ET_Theta_Int_noage');
+save(fullfile(outputpath, 'TS_Theta_Int.mat'), 'TS_Theta_Int_noage');
  
 %ET
-cfg = [];
-ET_Theta_Int = ft_freqgrandaverage(cfg, ET_Theta_Int{:});
+%cfg = [];
+%ET_Theta_Int = ft_freqgrandaverage(cfg, ET_Theta_Int{:});
 
 cfg = [];
 ET_Theta_Int_noage = ft_freqgrandaverage(cfg, ET_Theta_Int_noage{:});
@@ -393,8 +377,8 @@ cfg.zlim = [-0.2 0.2];
 ft_multiplotER(cfg, ET_Theta_Int, ET_Theta_Int_noage);
 
 %TS
-cfg = [];
-TS_Theta_Int = ft_freqgrandaverage(cfg, TS_Theta_Int{:});
+%cfg = [];
+%TS_Theta_Int = ft_freqgrandaverage(cfg, TS_Theta_Int{:});
 
 cfg = [];
 TS_Theta_Int_noage = ft_freqgrandaverage(cfg, TS_Theta_Int_noage{:});
@@ -460,8 +444,8 @@ end
 
 
 %For all
-cfg = [];
-Alpha_Int_all_av = ft_freqgrandaverage(cfg, all_Int_alpha{:});
+%cfg = [];
+%Alpha_Int_all_av = ft_freqgrandaverage(cfg, all_Int_alpha{:});
 
 cfg = [];
 Alpha_Int_all_av_noage = ft_freqgrandaverage(cfg, all_Int_alpha_noage{:});
@@ -480,18 +464,18 @@ ft_multiplotER(cfg, TS_Alpha_Int_noage{:});
 
 %For groups
 %devide by intervention
-ET_Alpha_Int = all_Int_alpha([subjects.group] == 2);
-TS_Alpha_Int = all_Int_alpha([subjects.group] == 1);
+%ET_Alpha_Int = all_Int_alpha([subjects.group] == 2);
+%TS_Alpha_Int = all_Int_alpha([subjects.group] == 1);
 
 ET_Alpha_Int_noage = all_Int_alpha_noage([subjects.group] == 2);
 TS_Alpha_Int_noage = all_Int_alpha_noage([subjects.group] == 1);
 
-save(fullfile(outputpath, 'ET_Alpha_Int.mat'), 'ET_Alpha_Int');
-save(fullfile(outputpath, 'TS_Alpha_Int.mat'), 'TS_Alpha_Int');
+save(fullfile(outputpath, 'ET_Alpha_Int.mat'), 'ET_Alpha_Int_noage');
+save(fullfile(outputpath, 'TS_Alpha_Int.mat'), 'TS_Alpha_Int_noage');
  
 %ET
-cfg = [];
-ET_Alpha_Int = ft_freqgrandaverage(cfg, ET_Alpha_Int{:});
+%cfg = [];
+%ET_Alpha_Int = ft_freqgrandaverage(cfg, ET_Alpha_Int{:});
 
 cfg = [];
 ET_Alpha_Int_noage = ft_freqgrandaverage(cfg, ET_Alpha_Int_noage{:});
@@ -510,8 +494,8 @@ cfg.zlim = [-0.1 0.2];
 ft_multiplotER(cfg, ET_Alpha_Int, ET_Alpha_Int_noage);
 
 %TS
-cfg = [];
-TS_Alpha_Int = ft_freqgrandaverage(cfg, TS_Alpha_Int{:});
+%cfg = [];
+%TS_Alpha_Int = ft_freqgrandaverage(cfg, TS_Alpha_Int{:});
 
 cfg = [];
 TS_Alpha_Int_noage = ft_freqgrandaverage(cfg, TS_Alpha_Int_noage{:});

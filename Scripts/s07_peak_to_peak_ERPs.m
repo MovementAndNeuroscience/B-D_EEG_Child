@@ -15,8 +15,8 @@ ET_P300_Post = importdata('ET_P300_Post.mat');
 TS_P300_Pre = importdata('TS_P300_Pre.mat');
 TS_P300_Post = importdata('TS_P300_Post.mat');
 cd('I:\SCIENCE-NEXS-neurolab\PROJECTS\PLAYMORE\EEG_project1\Analyses\B-D_EEG_Repo\Results\Intervention');
-ET_ERP_Int = importdata('ET_ERP_Int.mat');
-TS_ERP_Int = importdata('TS_ERP_Int.mat');
+ET_ERP_Int_noage = importdata('ET_ERP_Int.mat');
+TS_ERP_Int_noage = importdata('TS_ERP_Int.mat');
 
 %% Extract peak-to-peak amplitudes for each participant
 %% PRE INTERVENTION PEAK
@@ -164,7 +164,7 @@ mean(y)
 
 
 
-%% Mean amplitude for the period of time used in the permutation tests P300
+%% Mean amplitude for the period of time used in the permutation tests P300a
 
 
 for k=1:length(ET_ERP_Int_noage)
@@ -227,15 +227,14 @@ mean(y)
  
 [p,h,stats] = signrank(y)
 
-
-%% Mean amplitude for the period of time used in the permutation tests N200
+%% Mean amplitude for the period of time used in the permutation tests P300a
 
 
 for k=1:length(ET_ERP_Int_noage)
 
 cfg = [];
-cfg.channel = 'Pz';
-cfg.latency = [0.2 0.25];
+cfg.channel = 'Fz';
+cfg.latency = [0.15 0.3];
 cfg.avgoverchan = 'yes';
 selected = ft_selectdata(cfg, ET_ERP_Int_noage{k}); 
 
@@ -248,7 +247,7 @@ selected = ft_selectdata(cfg, ET_ERP_Int_noage{k});
 max(selected.avg)
 min(selected.avg)
                                                                                                                                                              
-peaks(k).mean_N2 = mean(selected.avg); 
+peaks(k).mean = mean(selected.avg); 
 
 end
 
@@ -257,8 +256,8 @@ end
 for k=1:length(TS_ERP_Int_noage)
 
 cfg = [];
-cfg.channel = 'Pz';
-cfg.latency = [0.2 0.25];
+cfg.channel = 'Fz';
+cfg.latency = [0.15 0.3];
 cfg.avgoverchan = 'yes';
 selected = ft_selectdata(cfg, TS_ERP_Int_noage{k}); 
 
@@ -271,14 +270,75 @@ selected = ft_selectdata(cfg, TS_ERP_Int_noage{k});
 max(selected.avg)
 min(selected.avg)
 
-peaks(k+9).mean_N2 = mean(selected.avg); 
+peaks(k+9).mean = mean(selected.avg); 
 
 end
 
 
 % run stats on the max peak only
-x = [peaks(1:9).mean_N2];
-y = [peaks(10:18).mean_N2];
+x = [peaks(1:9).mean];
+y = [peaks(10:18).mean];
+
+mean(x)
+mean(y)
+
+[h,p,ci,stats] = ttest2(x,y)
+
+[p,h,stats] = ranksum(x,y)
+
+[h,p,ci,stats] = ttest(x)
+ 
+[p,h,stats] = signrank(y)
+%% Mean amplitude for the period of time used in the permutation tests P300b
+
+for k=1:length(ET_ERP_Int_noage)
+
+cfg = [];
+cfg.channel = 'Pz';
+cfg.latency = [0.3 0.4];
+cfg.avgoverchan = 'yes';
+selected = ft_selectdata(cfg, ET_ERP_Int_noage{k}); 
+
+%cfg = [];
+%cfg.layout = layout_file;
+%cfg.showlabels = 'yes';
+%ft_multiplotER(cfg, selected);
+
+
+max(selected.avg)
+min(selected.avg)
+                                                                                                                                                             
+peaks(k).mean_P3b = mean(selected.avg); 
+
+end
+
+
+
+for k=1:length(TS_ERP_Int_noage)
+
+cfg = [];
+cfg.channel = 'Pz';
+cfg.latency = [0.3 0.4];
+cfg.avgoverchan = 'yes';
+selected = ft_selectdata(cfg, TS_ERP_Int_noage{k}); 
+
+%cfg = [];
+%cfg.layout = layout_file;
+%cfg.showlabels = 'yes';
+%ft_multiplotER(cfg, selected);
+
+
+max(selected.avg)
+min(selected.avg)
+
+peaks(k+9).mean_P3b = mean(selected.avg); 
+
+end
+
+
+% run stats on the max peak only
+x = [peaks(1:9).mean_P3b];
+y = [peaks(10:18).mean_P3b];
 
 mean(x)
 mean(y)
@@ -289,4 +349,4 @@ mean(y)
 
 [h,p,ci,stats] = ttest(y)
  
-[p,h,stats] = signrank(y)
+[p,h,stats] = signrank(x)

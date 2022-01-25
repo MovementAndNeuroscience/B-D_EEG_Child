@@ -157,14 +157,15 @@ all_Int_beta = all_Int_beta([subjects.name] ~= 1001 & [subjects.name] ~= 1017 & 
 all_Int_ERP = all_Int_ERP([subjects.name] ~= 1001 & [subjects.name] ~= 1017 & [subjects.name] ~= 1026 & [subjects.name] ~= 1023 & [subjects.name] ~= 1010);
 subjects = subjects([subjects.name] ~= 1001 & [subjects.name] ~= 1017 & [subjects.name] ~= 1026 & [subjects.name] ~= 1023 & [subjects.name] ~= 1010);
 
-%all_Int_ERP{23} = [];
-%all_Int_ERP{19} = [];
-%all_Int_ERP{17} = [];
-%all_Int_ERP{8} = [];
-%all_Int_ERP{1} = [];
+%% Calculate interpolated channels
+allBadchannels = allBadchannels([subjects.name] ~= 1001 & [subjects.name] ~= 1017 & [subjects.name] ~= 1026 & [subjects.name] ~= 1023 & [subjects.name] ~= 1010);
+for k = 1:length(subjects)
+allBadchannels(k).group = subjects(k).group;
+allBadchannels(k).int_count = length(allBadchannels(k).int_channels);
+end
 
-%all_Int_ERP = all_Int_ERP(~cellfun('isempty',all_Int_ERP));
-
+mean([allBadchannels([allBadchannels.group] == 1).int_count]) %TS
+mean([allBadchannels([allBadchannels.group] == 2).int_count]) %ET
  %%                                                GRAND AVERAGES 
  
  %%                                         Grand averages 
