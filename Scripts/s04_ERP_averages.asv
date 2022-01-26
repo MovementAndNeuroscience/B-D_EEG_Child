@@ -1,49 +1,25 @@
 %% Intervention Averages
 % September 2021
-% The script will average the ERPs and TFRs from the intervention file to
-% see what the activity looks like
+% The script will average the ERPs for each person and collect these files
+% in a data strcture for further analyses
 
 % Call the configuration script 
 cd('I:\SCIENCE-NEXS-neurolab\PROJECTS\PLAYMORE\EEG_project1\Analyses\B-D_EEG_Repo\Scripts');
 configuration
 
 cd('I:\SCIENCE-NEXS-neurolab\PROJECTS\PLAYMORE\EEG_project1\Analyses\B-D_EEG_Repo\Results\Intervention');
-all_Int_theta = importdata('all_Theta_Int.mat');
-all_Int_alpha = importdata('all_Alpha_Int.mat');
-all_Int_beta = importdata('all_Beta_Int.mat');
 all_Int_ERP = importdata('all_ERP_Int.mat');
 
  
-%% TOOLS
-%ERP Plot
-cfg = [];
-%cfg.latency = [0.2 0.4];
-cfg.showlabels = 'yes';
-cfg.layout = layout_file;
-ft_multiplotER(cfg, ET_ERP_Int_noage{9});
-
-%TFR Plot
-cfg = [];
-%cfg.latency = [0.2 0.4];
-cfg.showlabels = 'yes';
-cfg.layout = layout_file;
-ft_multiplotTFR(cfg, Int_theta);
-
-%TFR wave plot
-cfg = [];
-%cfg.latency = [0.2 0.4];
-cfg.showlabels = 'yes';
-cfg.layout = layout_file;
-ft_multiplotER(cfg, Int_beta);
 %% Set up a loop
 
 for k=1:length(subjects)
-    %get all the data
+    %Data & output paths
     datapath = subjects(k).folder;
     outputpath = 'I:\SCIENCE-NEXS-neurolab\PROJECTS\PLAYMORE\EEG_project1\Analyses\B-D_EEG_Repo\Results\Intervention';
     cd(datapath);
     
-    %Current file info
+    %Progress Message
     fprintf('Working on %s\n', num2str(subjects(k).name))
     
     %Files 
@@ -55,16 +31,17 @@ for k=1:length(subjects)
     
    
  %%                                          ERP
-
-    cfg = [];
-    cfg.baseline = [-0.1 0];
-    cfg.latency = [-0.1 1];
-    Int_ERP = ft_timelockanalysis(cfg, mydata_int_clean);
+ 
+   %Average 
+   cfg = [];
+   cfg.baseline = [-0.1 0];
+   cfg.latency = [-0.1 1];
+   Int_ERP = ft_timelockanalysis(cfg, mydata_int_clean);
     
-    %Correct the baseline
-    cfg = [];
-    cfg.baseline = [-0.1, 0];
-    Int_ERP_baseline = ft_timelockbaseline(cfg, Int_ERP);
+   %Correct the baseline on the average
+   cfg = [];
+   cfg.baseline = [-0.1, 0];
+   Int_ERP_baseline = ft_timelockbaseline(cfg, Int_ERP);
     
  %SAVE
   
@@ -72,146 +49,73 @@ for k=1:length(subjects)
   save(fullfile(datapath, FileName), 'Int_ERP_baseline');
   
  
-  %save in a structure
-  all_Int_ERP{k} = Int_ERP_baseline;
-  all_ERP_subjects(k) = subjects(k).name;
+  %Add the avergaed file to a structure and add to a list of participants who were included  
+  all_Int_ERP{k} = Int_ERP_baseline; %structure with all averages
+  all_ERP_subjects(k) = subjects(k).name; %structure with participants who were processed
   
-  %Save the structure file
+  %Save the files
   save(fullfile(outputpath, 'all_ERP_int.mat'), 'all_Int_ERP');
   save(fullfile(outputpath, 'all_ERP_subjects.mat'), 'all_ERP_subjects');
-  
-
-  
- %%                                         TFR
- %wavelet
-    cfg             = [];
-    cfg.output      = 'pow';
-    cfg.method      = 'wavelet';
-    cfg.channel     = 'eeg';
-    cfg.gwidth      = 3;
-    cfg.width       = 5;
-    cfg.foi         = 4:0.5:30;
-    cfg.toi         = -1.00:0.03125:2.00;
-    cfg.keeptrials  = 'yes';
-    
-    Int_TFR         = ft_freqanalysis(cfg, mydata_int_clean); 
-    
-  %baseline correction
-    cfg                 = [];
-    cfg.parameter       = 'powspctrm';
-    cfg.baseline        = [-inf inf]; %[-0.4 0]; %[-inf inf];
-    cfg.baselinetype    = 'relchange';
-    Int_TFR             = ft_freqbaseline(cfg, Int_TFR);
-    
-  %Average theta
-    cfg = [];
-    cfg.frequency = [4 8];
-    cfg.latency = [-0.4 1];
-    cfg.avgoverrpt = 'yes';
-    Int_theta = ft_selectdata(cfg, Int_TFR);
-  
-  %Average alpha
-    cfg = [];
-    cfg.frequency = [8 12];
-    cfg.latency = [-0.4 1];
-    cfg.avgoverrpt = 'yes';
-    Int_alpha = ft_selectdata(cfg, Int_TFR);
-    
-  %Average beta
-    cfg = [];
-    cfg.frequency = [12 30];
-    cfg.latency = [-0.4 1];
-    cfg.avgoverrpt = 'yes';
-    Int_beta = ft_selectdata(cfg, Int_TFR);
-    
-    
-  %SAVE
-  
-  FileName = [num2str(subjects(k).name), '_Int_theta.mat'];
-  save(fullfile(datapath, FileName), 'Int_theta');
-  
-  FileName = [num2str(subjects(k).name), '_Int_alpha.mat'];
-  save(fullfile(datapath, FileName), 'Int_alpha');
-  
-  FileName = [num2str(subjects(k).name), '_Int_beta.mat'];
-  save(fullfile(datapath, FileName), 'Int_beta');
-  
- 
-  %save in a structure
-  all_Int_theta{k} = Int_theta;
-  all_Int_alpha{k} = Int_alpha;
-  all_Int_beta{k} = Int_beta;
-  
- %% Save structure files
- 
- save(fullfile(outputpath, 'all_Theta_Int.mat'), 'all_Int_theta');
- save(fullfile(outputpath, 'all_Alpha_Int.mat'), 'all_Int_alpha');
- save(fullfile(outputpath, 'all_Beta_Int.mat'), 'all_Int_beta');
  
 end 
 
 %% SELECT PARTICIPANTS - remove those that have not been matched 
-all_Int_alpha = all_Int_alpha([subjects.name] ~= 1001 & [subjects.name] ~= 1017 & [subjects.name] ~= 1026 & [subjects.name] ~= 1023 & [subjects.name] ~= 1010);
-all_Int_theta = all_Int_theta([subjects.name] ~= 1001 & [subjects.name] ~= 1017 & [subjects.name] ~= 1026 & [subjects.name] ~= 1023 & [subjects.name] ~= 1010);
-all_Int_beta = all_Int_beta([subjects.name] ~= 1001 & [subjects.name] ~= 1017 & [subjects.name] ~= 1026 & [subjects.name] ~= 1023 & [subjects.name] ~= 1010);
+%Remove participants who were not included in analyses from the avergaed
+%data structure and from the subject list
+
 all_Int_ERP = all_Int_ERP([subjects.name] ~= 1001 & [subjects.name] ~= 1017 & [subjects.name] ~= 1026 & [subjects.name] ~= 1023 & [subjects.name] ~= 1010);
 subjects = subjects([subjects.name] ~= 1001 & [subjects.name] ~= 1017 & [subjects.name] ~= 1026 & [subjects.name] ~= 1023 & [subjects.name] ~= 1010);
 
-%% Calculate interpolated channels
-allBadchannels = allBadchannels([subjects.name] ~= 1001 & [subjects.name] ~= 1017 & [subjects.name] ~= 1026 & [subjects.name] ~= 1023 & [subjects.name] ~= 1010);
-for k = 1:length(subjects)
-allBadchannels(k).group = subjects(k).group;
-allBadchannels(k).int_count = length(allBadchannels(k).int_channels);
-end
-
-mean([allBadchannels([allBadchannels.group] == 1).int_count]) %TS
-mean([allBadchannels([allBadchannels.group] == 2).int_count]) %ET
  %%                                                GRAND AVERAGES 
  
  %%                                         Grand averages 
-%-------------ERP Grand Average
-%------------ Regress out the confound
-% I have checked the function for grandaveraging and it does not use
-% individual variance to compute the grand averages so the code below
-% should be valid for regressing out the impact of the dummy grade variable
-% - the dummy grade variable was used instead of continuous age, as the
-% continuous age variable is not parametric. Below are data structures for
-% both corrected and uncorrected data. The differences can be compared by
-% plotting. 
 
-%prepare the grade dummy confound table
+%------------ Regress out the confound
+% Age is not equal between the two groups and this needs to be controlled
+% for. It can be done with the use the ft_regressconfound() function which
+% was suggested on the fieldtrip mailing list. However, the function is
+% written for correcting noise across trials and so the data has to be
+% restructured here to ensure that the function can be applied to the
+% ERP averages across participants. 
+
+%The confound is specified as participants' age
+
+
+%prepare the age dummy confound table
 age = zeros(length(subjects), 1);
 age(:,1) = [subjects.age];
 
-%the individual data would need to be arranged in a new sctructure
+%Each participants' averaged data needs to be arranged in a new sctructure
+%with the field called "trials" which us required by the function. Here the
+%"trials" are actually participants' averaged data
 for k = 1:length(subjects)
     trials(k,:,:) = all_Int_ERP{k}.avg;
 end
 
+%Arrange the structure that will be compatibale with the function
 all_averaged_ERPs.time = all_Int_ERP{1}.time;
 all_averaged_ERPs.label = all_Int_ERP{1}.label;
 all_averaged_ERPs.elec = all_Int_ERP{1}.elec;
 all_averaged_ERPs.dimord = 'rpt_chan_time';
 all_averaged_ERPs.trial = trials;
 
-%remove the confound
+%Remove the confound
 cfg = [];
 cfg.confound = age;
 all_averaged_ERPs_con = ft_regressconfound(cfg, all_averaged_ERPs);
 
-%put these back in a new structure
-all_Int_ERP_noage = all_Int_ERP; %copy the old structure
-trials_noage = all_averaged_ERPs_con.trial;
+%Now these corrected values must be extracted and inserted back into the
+%original data structure with all avergaed ERPs for each participant
+all_Int_ERP_noage = all_Int_ERP; %Copy the old structure
+trials_noage = all_averaged_ERPs_con.trial; %Copy all of the corrected averages
 
 for k = 1:length(subjects)
-    all_Int_ERP_noage{k}.avg = squeeze(trials_noage(k,:,:));
+    all_Int_ERP_noage{k}.avg = squeeze(trials_noage(k,:,:)); %select the corrected average and insert back to the original data structure
 end
 
 
 %--------------Grand Average
-%cfg = [];
-%ERP_Int_all_av = ft_timelockgrandaverage(cfg, all_Int_ERP{:});
-
+%Pooled for all participants
 cfg = [];
 ERP_Int_all_av_noage = ft_timelockgrandaverage(cfg, all_Int_ERP_noage{:});
 
@@ -222,15 +126,13 @@ cfg.showlabels = 'yes';
 ft_multiplotER(cfg, ERP_Int_all_av_noage);
 
 %Grand averages for groups
-
-%devide by intervention
-%ET_ERP_Int = all_Int_ERP([subjects.group] == 2);
-%TS_ERP_Int = all_Int_ERP([subjects.group] == 1);
+%Divide the overall data structure to two separate groups - motor
+%intervention and control
 
 ET_ERP_Int_noage = all_Int_ERP_noage([subjects.group] == 2);
 TS_ERP_Int_noage = all_Int_ERP_noage([subjects.group] == 1);
 
-
+%Save the group specific 
 save(fullfile(outputpath, 'ET_ERP_Int.mat'), 'ET_ERP_Int_noage');
 save(fullfile(outputpath, 'TS_ERP_Int.mat'), 'TS_ERP_Int_noage');
 

@@ -184,7 +184,7 @@ selected = ft_selectdata(cfg, ET_ERP_Int_noage{k});
 max(selected.avg)
 min(selected.avg)
                                                                                                                                                              
-peaks(k).mean = mean(selected.avg); 
+peaks(k).mean_p3a = mean(selected.avg); 
 
 end
 
@@ -207,90 +207,14 @@ selected = ft_selectdata(cfg, TS_ERP_Int_noage{k});
 max(selected.avg)
 min(selected.avg)
 
-peaks(k+9).mean = mean(selected.avg); 
+peaks(k+9).mean_p3a = mean(selected.avg); 
 
 end
 
 
-% run stats on the max peak only
-x = [peaks(1:9).mean];
-y = [peaks(10:18).mean];
-
-mean(x)
-mean(y)
-
-[h,p,ci,stats] = ttest2(x,y)
-
-[p,h,stats] = ranksum(x,y)
-
-[h,p,ci,stats] = ttest(x)
- 
-[p,h,stats] = signrank(y)
-
-%% Mean amplitude for the period of time used in the permutation tests P300a
-
-
-for k=1:length(ET_ERP_Int_noage)
-
-cfg = [];
-cfg.channel = 'Fz';
-cfg.latency = [0.15 0.3];
-cfg.avgoverchan = 'yes';
-selected = ft_selectdata(cfg, ET_ERP_Int_noage{k}); 
-
-%cfg = [];
-%cfg.layout = layout_file;
-%cfg.showlabels = 'yes';
-%ft_multiplotER(cfg, selected);
-
-
-max(selected.avg)
-min(selected.avg)
-                                                                                                                                                             
-peaks(k).mean = mean(selected.avg); 
-
-end
-
-
-
-for k=1:length(TS_ERP_Int_noage)
-
-cfg = [];
-cfg.channel = 'Fz';
-cfg.latency = [0.15 0.3];
-cfg.avgoverchan = 'yes';
-selected = ft_selectdata(cfg, TS_ERP_Int_noage{k}); 
-
-%cfg = [];
-%cfg.layout = layout_file;
-%cfg.showlabels = 'yes';
-%ft_multiplotER(cfg, selected);
-
-
-max(selected.avg)
-min(selected.avg)
-
-peaks(k+9).mean = mean(selected.avg); 
-
-end
-
-
-% run stats on the max peak only
-x = [peaks(1:9).mean];
-y = [peaks(10:18).mean];
-
-mean(x)
-mean(y)
-
-[h,p,ci,stats] = ttest2(x,y)
-
-[p,h,stats] = ranksum(x,y)
-
-[h,p,ci,stats] = ttest(x)
- 
-[p,h,stats] = signrank(y)
 %% Mean amplitude for the period of time used in the permutation tests P300b
 
+
 for k=1:length(ET_ERP_Int_noage)
 
 cfg = [];
@@ -308,7 +232,7 @@ selected = ft_selectdata(cfg, ET_ERP_Int_noage{k});
 max(selected.avg)
 min(selected.avg)
                                                                                                                                                              
-peaks(k).mean_P3b = mean(selected.avg); 
+peaks(k).mean_p3b = mean(selected.avg); 
 
 end
 
@@ -331,22 +255,69 @@ selected = ft_selectdata(cfg, TS_ERP_Int_noage{k});
 max(selected.avg)
 min(selected.avg)
 
-peaks(k+9).mean_P3b = mean(selected.avg); 
+peaks(k+9).mean_p3b = mean(selected.avg); 
 
 end
 
 
-% run stats on the max peak only
-x = [peaks(1:9).mean_P3b];
-y = [peaks(10:18).mean_P3b];
+%% Mean amplitude for the period of time used in the permutation tests N200
+
+for k=1:length(ET_ERP_Int_noage)
+
+cfg = [];
+cfg.channel = 'Pz';
+cfg.latency = [0.2 0.25];
+cfg.avgoverchan = 'yes';
+selected = ft_selectdata(cfg, ET_ERP_Int_noage{k}); 
+
+%cfg = [];
+%cfg.layout = layout_file;
+%cfg.showlabels = 'yes';
+%ft_multiplotER(cfg, selected);
+
+
+max(selected.avg)
+min(selected.avg)
+                                                                                                                                                             
+peaks(k).mean_n2 = mean(selected.avg); 
+
+end
+
+
+
+for k=1:length(TS_ERP_Int_noage)
+
+cfg = [];
+cfg.channel = 'Pz';
+cfg.latency = [0.2 0.25];
+cfg.avgoverchan = 'yes';
+selected = ft_selectdata(cfg, TS_ERP_Int_noage{k}); 
+
+%cfg = [];
+%cfg.layout = layout_file;
+%cfg.showlabels = 'yes';
+%ft_multiplotER(cfg, selected);
+
+
+max(selected.avg)
+min(selected.avg)
+
+peaks(k+9).mean_n2 = mean(selected.avg); 
+
+end
+
+
+%% run stats 
+x = [peaks(1:9).mean_n2];
+y = [peaks(10:18).mean_n2];
 
 mean(x)
 mean(y)
 
-[h,p,ci,stats] = ttest2(x,y)
-
-[p,h,stats] = ranksum(x,y)
-
-[h,p,ci,stats] = ttest(y)
- 
 [p,h,stats] = signrank(x)
+[p,h,stats] = signrank(y)
+
+%% for R
+x <- c(0.652, 0.0195, 0.496, 0.039, 0.0078, 0.0078)
+x <- x/2
+p.adjust(x, method = 'BH')

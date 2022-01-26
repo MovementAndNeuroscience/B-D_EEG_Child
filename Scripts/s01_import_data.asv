@@ -14,7 +14,7 @@ configuration
 % In this case, I will import all data already divided into trials
 
 for k=1:length(subjects)
-
+    
     %Progress message - prints a message every time it starts working on a
     %new subject
     fprintf('Working on %s', num2str(subjects(k).name))

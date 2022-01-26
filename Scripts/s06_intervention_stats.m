@@ -8,7 +8,7 @@ cd('I:\SCIENCE-NEXS-neurolab\PROJECTS\PLAYMORE\EEG_project1\Analyses\Scripts');
 configuration
 
 %load the data
-cd('I:\SCIENCE-NEXS-neurolab\PROJECTS\PLAYMORE\EEG_project1\Analyses\Data\Intervention');
+cd('I:\SCIENCE-NEXS-neurolab\PROJECTS\PLAYMORE\EEG_project1\Analyses\B-D_EEG_Repo\Results\Intervention');
 ET_ERP_Int = importdata('ET_ERP_Int.mat');
 TS_ERP_Int = importdata('TS_ERP_Int.mat');
 
@@ -55,15 +55,15 @@ cfg.clusterstatistic    = 'maxsum';
 cfg.tail                = 0;
 cfg.clustertail         = 0;            % = two-tailed hypothesis
 cfg.alpha               = 0.025;        % = 0.05/2 for two-tailed hypothesis
-cfg.channel             = [49 50 51]; %[49 50 52]; %[12 13 14 21 22 23];  %[49 50 52] %'Fz'; %AFz, Fz, FCz [6 13 22] [5 6 7 12 13 14 21 22 23] [12 13 14 21 22 23 30 31 32]
-cfg.latency             = [0.2 0.3]; 
+cfg.channel             = [49 50 51]; %[49 50 51]; %[12 13 14 21 22 23];  %[49 50 52] %'Fz'; %AFz, Fz, FCz [6 13 22] [5 6 7 12 13 14 21 22 23] [12 13 14 21 22 23 30 31 32]
+cfg.latency             = [0.2 0.25]; 
 cfg.numrandomization    = 1000;
 cfg.neighbours          = neighbours;
 cfg.design              = design;
 cfg.ivar                = 1; %group identifier specifies the column in the matrix "design" which is the independent variable
 stats = ft_timelockstatistics(cfg, TS_ERP_Int_noage{:}, ET_ERP_Int_noage{:}); % or ft_timelockstatistics(cfg, alldata_group1{:}, alldata_group2{:})
 
-save stats_P300_int stats;
+save stats_N200_int stats;
 
 clear design
 
@@ -78,6 +78,10 @@ cfg.maskparameter = 'mask';  % use the thresholded probability to mask the data
 cfg.maskstyle     = 'box';
 
 figure; ft_multiplotER(cfg, stats);
+
+% identify the cluster latency N200
+neg = stats.negclusterslabelmat == 1;
+neg =[neg;stats.time];
 
 clear design
 % ----------------------- REGRESSION WITH TASK ACCURACY
@@ -97,9 +101,9 @@ cfg.numrandomization = 1000;
 cfg.correctm         = 'cluster';
 cfg.clusteralpha     = 0.05;   
 cfg.alpha            = 0.025;
-cfg.channel          = [12 13 14 21 22 23];% [12 13 14 21 22 23 ]; %'Fz'; %AFz, Fz, FCz [6 13 22];
+cfg.channel          = [49 50 51];% [12 13 14 21 22 23 ]; %'Fz'; %AFz, Fz, FCz [6 13 22];
 cfg.neighbours       = neighbours;
-cfg.latency          = [0.15 0.25]; 
+cfg.latency          = [0.2 0.25]; 
 cfg.design           = design;
 cfg.ivar             = 1;
 
