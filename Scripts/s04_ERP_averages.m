@@ -8,7 +8,7 @@ cd('I:\SCIENCE-NEXS-neurolab\PROJECTS\PLAYMORE\EEG_project1\Analyses\B-D_EEG_Rep
 configuration
 
 cd('I:\SCIENCE-NEXS-neurolab\PROJECTS\PLAYMORE\EEG_project1\Analyses\B-D_EEG_Repo\Results\Intervention');
-all_Int_ERP = importdata('all_ERP_Int.mat');
+all_Int_ERP = importdata('all_ERP_int.mat');
 
 outputpath = 'I:\SCIENCE-NEXS-neurolab\PROJECTS\PLAYMORE\EEG_project1\Analyses\B-D_EEG_Repo\Results\Intervention';
 
@@ -60,12 +60,12 @@ for k=1:length(subjects)
  
 end 
 
-%% SELECT PARTICIPANTS - remove those that have not been matched 
+%% SELECT PARTICIPANTS - remove those that have not passed the quality check
 %Remove participants who were not included in analyses from the avergaed
 %data structure and from the subject list
 
-all_Int_ERP = all_Int_ERP([subjects.name] ~= 1001 & [subjects.name] ~= 1017 & [subjects.name] ~= 1026 & [subjects.name] ~= 1023 & [subjects.name] ~= 1010);
-subjects = subjects([subjects.name] ~= 1001 & [subjects.name] ~= 1017 & [subjects.name] ~= 1026 & [subjects.name] ~= 1023 & [subjects.name] ~= 1010);
+all_Int_ERP = all_Int_ERP([subjects.name] ~= 1010 & [subjects.name] ~= 1017 & [subjects.name] ~= 1023);
+subjects = subjects([subjects.name] ~= 1010 & [subjects.name] ~= 1017 & [subjects.name] ~= 1023);
 
 
  %%                                                GRAND AVERAGES 

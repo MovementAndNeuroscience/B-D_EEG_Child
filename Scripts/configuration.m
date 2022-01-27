@@ -32,10 +32,11 @@ cd(outputdir);
 %Structure with bad channels
 allBadchannels = importdata('allBadchannels.mat');
 
+%% These files were overwritten and are lost
 %Structure with removed trials
-allRemovedTrials = importdata('allRemovedTrials.mat');
+%allRemovedTrials = importdata('allRemovedTrials.mat');
 
 %Structure with removed ICA components
-allRejectedComponents = importdata('allRejectedComponents.mat');
+%allRejectedComponents = importdata('allRejectedComponents.mat');
    
  

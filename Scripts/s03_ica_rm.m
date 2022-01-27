@@ -69,7 +69,7 @@ allRejectedComponents(k).subjects = subjects(k).name;
 allRejectedComponents(k).int_comp = reject_comp;
 
 %Save the rejected components structure
-save(fullfile(projectdir, 'allRejectedComponents.mat'), 'allRejectedComponents')
+save(fullfile(outputdir, 'allRejectedComponents.mat'), 'allRejectedComponents')
 
 %Save the datafile after removing components
 FileName = [num2str(subjects(k).name), '_int_ica.mat'];
@@ -113,7 +113,7 @@ FileName = [num2str(subjects(k).name), '_int_clean.mat'];
 save(fullfile(datapath, FileName), 'mydata_int_clean');
 
 %Save the removed/remaining trials structure
-save(fullfile(projectdir, 'allRemovedTrials.mat'), 'allRemovedTrials');
+save(fullfile(outputdir, 'allRemovedTrials.mat'), 'allRemovedTrials');
 
 
 %% ------------------------------   Quality Checks  -------------------------------

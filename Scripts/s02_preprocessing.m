@@ -170,8 +170,8 @@ for k=1:length(subjects)
     
     %% Save the files with bad channels and trials that were removed
 
-save(fullfile(projectdir, 'allBadchannels.mat'), 'allBadchannels');
-save(fullfile(projectdir, 'allRemovedTrials.mat'), 'allRemovedTrials');
+save(fullfile(outputdir, 'allBadchannels.mat'), 'allBadchannels');
+save(fullfile(outputdir, 'allRemovedTrials.mat'), 'allRemovedTrials');
 
 
     
