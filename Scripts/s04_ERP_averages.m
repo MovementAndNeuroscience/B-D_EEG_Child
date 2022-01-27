@@ -10,13 +10,14 @@ configuration
 cd('I:\SCIENCE-NEXS-neurolab\PROJECTS\PLAYMORE\EEG_project1\Analyses\B-D_EEG_Repo\Results\Intervention');
 all_Int_ERP = importdata('all_ERP_Int.mat');
 
+outputpath = 'I:\SCIENCE-NEXS-neurolab\PROJECTS\PLAYMORE\EEG_project1\Analyses\B-D_EEG_Repo\Results\Intervention';
+
  
 %% Set up a loop
 
 for k=1:length(subjects)
     %Data & output paths
     datapath = subjects(k).folder;
-    outputpath = 'I:\SCIENCE-NEXS-neurolab\PROJECTS\PLAYMORE\EEG_project1\Analyses\B-D_EEG_Repo\Results\Intervention';
     cd(datapath);
     
     %Progress Message
@@ -71,7 +72,7 @@ subjects = subjects([subjects.name] ~= 1001 & [subjects.name] ~= 1017 & [subject
  
  %%                                         Grand averages 
 
-%------------ Regress out the confound
+%% ------------ Regress out the confound
 % Age is not equal between the two groups and this needs to be controlled
 % for. It can be done with the use the ft_regressconfound() function which
 % was suggested on the fieldtrip mailing list. However, the function is
@@ -114,8 +115,9 @@ for k = 1:length(subjects)
     all_Int_ERP_noage{k}.avg = squeeze(trials_noage(k,:,:)); %select the corrected average and insert back to the original data structure
 end
 
+save(fullfile(outputpath, 'all_ERP_int_noage.mat'), 'all_Int_ERP_noage');
 
-%--------------Grand Average
+%% --------------Grand Average
 %Pooled for all participants
 cfg = [];
 ERP_Int_all_av_noage = ft_timelockgrandaverage(cfg, all_Int_ERP_noage{:});

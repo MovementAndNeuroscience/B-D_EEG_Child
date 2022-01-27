@@ -10,13 +10,14 @@ configuration
 cd('I:\SCIENCE-NEXS-neurolab\PROJECTS\PLAYMORE\EEG_project1\Analyses\B-D_EEG_Repo\Results\Intervention');
 all_Int_ERP = importdata('all_ERP_Int.mat');
 
+outputpath = 'I:\SCIENCE-NEXS-neurolab\PROJECTS\PLAYMORE\EEG_project1\Analyses\B-D_EEG_Repo\Results\Intervention';
+
  
 %% Set up a loop
 
 for k=1:length(subjects)
     %Data & output paths
     datapath = subjects(k).folder;
-    outputpath = 'I:\SCIENCE-NEXS-neurolab\PROJECTS\PLAYMORE\EEG_project1\Analyses\B-D_EEG_Repo\Results\Intervention';
     cd(datapath);
     
     %Progress Message
@@ -66,11 +67,12 @@ end
 all_Int_ERP = all_Int_ERP([subjects.name] ~= 1001 & [subjects.name] ~= 1017 & [subjects.name] ~= 1026 & [subjects.name] ~= 1023 & [subjects.name] ~= 1010);
 subjects = subjects([subjects.name] ~= 1001 & [subjects.name] ~= 1017 & [subjects.name] ~= 1026 & [subjects.name] ~= 1023 & [subjects.name] ~= 1010);
 
+
  %%                                                GRAND AVERAGES 
  
  %%                                         Grand averages 
 
-%------------ Regress out the confound
+%% ------------ Regress out the confound
 % Age is not equal between the two groups and this needs to be controlled
 % for. It can be done with the use the ft_regressconfound() function which
 % was suggested on the fieldtrip mailing list. However, the function is
@@ -113,8 +115,9 @@ for k = 1:length(subjects)
     all_Int_ERP_noage{k}.avg = squeeze(trials_noage(k,:,:)); %select the corrected average and insert back to the original data structure
 end
 
+save(fullfile(outputpath, 'all_ERP_int.mat'), 'all_Int_ERP');
 
-%--------------Grand Average
+%% --------------Grand Average
 %Pooled for all participants
 cfg = [];
 ERP_Int_all_av_noage = ft_timelockgrandaverage(cfg, all_Int_ERP_noage{:});
@@ -132,15 +135,12 @@ ft_multiplotER(cfg, ERP_Int_all_av_noage);
 ET_ERP_Int_noage = all_Int_ERP_noage([subjects.group] == 2);
 TS_ERP_Int_noage = all_Int_ERP_noage([subjects.group] == 1);
 
-%Save the group specific 
+%Save the group specific structure files
 save(fullfile(outputpath, 'ET_ERP_Int.mat'), 'ET_ERP_Int_noage');
 save(fullfile(outputpath, 'TS_ERP_Int.mat'), 'TS_ERP_Int_noage');
 
-
+% Group Grand Averages
 %ET
-%cfg = [];
-%ET_ERP_Int = ft_timelockgrandaverage(cfg, ET_ERP_Int{:});
-
 cfg = [];
 ET_ERP_Int_noage = ft_timelockgrandaverage(cfg, ET_ERP_Int_noage{:});
 
@@ -152,325 +152,43 @@ ft_multiplotER(cfg, ET_ERP_Int, ET_ERP_Int_noage);
 
 
 %TS
-%cfg = [];
-%TS_ERP_Int = ft_timelockgrandaverage(cfg, TS_ERP_Int{:});
-
 cfg = [];
 TS_ERP_Int_noage = ft_timelockgrandaverage(cfg, TS_ERP_Int_noage{:});
 
-%plot
-cfg = [];
-cfg.layout = layout_file;
-cfg.showlabels = 'yes';
-%ft_multiplotER(cfg, TS_ERP_Int, ET_ERP_Int);
-ft_multiplotER(cfg, TS_ERP_Int, TS_ERP_Int_noage);
 
-%plot with a mask
-TS_ERP_Int_noage.mask = stats.mask; %mask
-ET_ERP_Int_noage.mask = stats.mask;
+%Plot both groups
 
 cfg = [];
 cfg.layout = layout_file;
 cfg.showlabels = 'yes';
 cfg.xlim = [-0.1 0.8]; 
-%cfg.channel = [49 50 52];
-%cfg.maskparameter = 'mask';  % use the thresholded probability to mask the data
-%cfg.maskstyle     = 'box';
 cfg.linewidth = 1;
 ft_multiplotER(cfg, ET_ERP_Int_noage, TS_ERP_Int_noage);
 
-%Standardised topoplot
+%Standardised topoplot P300a
+cfg = [];
+cfg.layout = layout_file;
+cfg.showlabels = 'yes';
+cfg.xlim = [0.15 0.3]; %time
+cfg.zlim = [-5 3]; %amplitude
+ft_topoplotER (cfg, ET_ERP_Int_noage, TS_ERP_Int_noage);
+
+%Standardised topoplot N200
+cfg = [];
+cfg.layout = layout_file;
+cfg.showlabels = 'yes';
+cfg.xlim = [0.2 0.25]; %time
+cfg.zlim = [-5 4]; %amplitude
+ft_topoplotER (cfg, ET_ERP_Int_noage, TS_ERP_Int_noage);
+
+%Standardised topoplot P300b
 cfg = [];
 cfg.layout = layout_file;
 cfg.showlabels = 'yes';
 cfg.xlim = [0.3 0.4]; %time
 cfg.zlim = [-8 10]; %amplitude
-%ft_multiplotER(cfg, TS_ERP_Int, ET_ERP_Int);
 ft_topoplotER (cfg, ET_ERP_Int_noage, TS_ERP_Int_noage);
 
 
 
 
-%---------------------Theta 
-%------------ Regress out the confound
-% The age effect will have to be regressed out of the three dimensional 
-% pwspctrm structure. Below are data structures for
-% both corrected and uncorrected data. The differences can be compared by
-% plotting. 
-
-%prepare the grade dummy confound table
-age = zeros(length(subjects), 1);
-age(:,1) = [subjects.age];
-
-%the individual data would need to be arranged in a new sctructure
-for k = 1:length(subjects)
-    powspctrm(k,:,:,:) = all_Int_theta{k}.powspctrm;
-end
-
-all_averaged_theta.time = all_Int_theta{1}.time;
-all_averaged_theta.label = all_Int_theta{1}.label;
-all_averaged_theta.elec = all_Int_theta{1}.elec;
-all_averaged_theta.dimord = 'rpt_chan_freq_time';
-all_averaged_theta.freq = all_Int_theta{1}.freq;
-all_averaged_theta.powspctrm = powspctrm;
-
-%remove the confound
-cfg = [];
-cfg.confound = age;
-all_averaged_theta_con = ft_regressconfound(cfg, all_averaged_theta);
-
-%put these back in a new structure
-all_Int_theta_noage = all_Int_theta; %copy the old structure
-powspctrm_noage = all_averaged_theta_con.powspctrm;
-
-for k = 1:length(subjects)
-    all_Int_theta_noage{k}.powspctrm = squeeze(powspctrm_noage(k,:,:,:));
-end
-
-
-
-%For all
-%cfg = [];
-%Theta_Int_all_av = ft_freqgrandaverage(cfg, all_Int_theta{:});
-
-cfg = [];
-Theta_Int_all_av_noage = ft_freqgrandaverage(cfg, all_Int_theta_noage{:});
-
-%plot 
-cfg = [];
-cfg.layout = layout_file;
-cfg.showlabels = 'yes';
-cfg.zlim = [-0.2 0.2];
-ft_multiplotTFR(cfg, Theta_Int_all_av_noage);
-
-cfg = [];
-cfg.layout = layout_file;
-cfg.showlabels = 'yes';
-ft_multiplotER(cfg, Theta_Int_all_av, Theta_Int_all_av_noage);
-
-%For groups
-%devide by intervention
-%ET_Theta_Int = all_Int_theta([subjects.group] == 2);
-%TS_Theta_Int = all_Int_theta([subjects.group] == 1);
-
-ET_Theta_Int_noage = all_Int_theta_noage([subjects.group] == 2);
-TS_Theta_Int_noage = all_Int_theta_noage([subjects.group] == 1);
-
-save(fullfile(outputpath, 'ET_Theta_Int.mat'), 'ET_Theta_Int_noage');
-save(fullfile(outputpath, 'TS_Theta_Int.mat'), 'TS_Theta_Int_noage');
- 
-%ET
-%cfg = [];
-%ET_Theta_Int = ft_freqgrandaverage(cfg, ET_Theta_Int{:});
-
-cfg = [];
-ET_Theta_Int_noage = ft_freqgrandaverage(cfg, ET_Theta_Int_noage{:});
-
-%plot
-cfg = [];
-cfg.layout = layout_file;
-cfg.showlabels = 'yes';
-cfg.zlim = [-0.2 0.2];
-ft_multiplotTFR(cfg, ET_Theta_Int_noage);
-
-cfg = [];
-cfg.layout = layout_file;
-cfg.showlabels = 'yes';
-cfg.zlim = [-0.2 0.2];
-ft_multiplotER(cfg, ET_Theta_Int, ET_Theta_Int_noage);
-
-%TS
-%cfg = [];
-%TS_Theta_Int = ft_freqgrandaverage(cfg, TS_Theta_Int{:});
-
-cfg = [];
-TS_Theta_Int_noage = ft_freqgrandaverage(cfg, TS_Theta_Int_noage{:});
-
-%plot
-cfg = [];
-cfg.layout = layout_file;
-cfg.showlabels = 'yes';
-cfg.zlim = [-0.2 0.2];
-ft_multiplotTFR(cfg, TS_Theta_Int_noage);
-
-cfg = [];
-cfg.layout = layout_file;
-cfg.showlabels = 'yes';
-cfg.zlim = [-0.2 0.2];
-ft_multiplotER(cfg, TS_Theta_Int, TS_Theta_Int_noage);
-
-
-%Diff plot
-cfg = [];
-cfg.layout = layout_file;
-cfg.showlabels = 'yes';
-ft_multiplotER(cfg, TS_Theta_Int_noage, ET_Theta_Int_noage);
-
-
-%---------------------Alpha 
-%------------ Regress out the confound
-% The age effect will have to be regressed out of the three dimensional 
-% pwspctrm structure. Below are data structures for
-% both corrected and uncorrected data. The differences can be compared by
-% plotting. 
-
-%prepare the grade dummy confound table
-age = zeros(length(subjects), 1);
-age(:,1) = [subjects.age];
-
-%the individual data would need to be arranged in a new sctructure
-for k = 1:length(subjects)
-    powspctrm(k,:,:,:) = all_Int_alpha{k}.powspctrm;
-end
-
-all_averaged_alpha.time = all_Int_alpha{1}.time;
-all_averaged_alpha.label = all_Int_alpha{1}.label;
-all_averaged_alpha.elec = all_Int_alpha{1}.elec;
-all_averaged_alpha.dimord = 'rpt_chan_freq_time';
-all_averaged_alpha.freq = all_Int_alpha{1}.freq;
-all_averaged_alpha.powspctrm = powspctrm;
-
-%remove the confound
-cfg = [];
-cfg.confound = age;
-all_averaged_alpha_con = ft_regressconfound(cfg, all_averaged_alpha);
-
-%put these back in a new structure
-all_Int_alpha_noage = all_Int_alpha; %copy the old structure
-powspctrm_noage = all_averaged_alpha_con.powspctrm;
-
-for k = 1:length(subjects)
-    all_Int_alpha_noage{k}.powspctrm = squeeze(powspctrm_noage(k,:,:,:));
-end
-
-
-
-
-%For all
-%cfg = [];
-%Alpha_Int_all_av = ft_freqgrandaverage(cfg, all_Int_alpha{:});
-
-cfg = [];
-Alpha_Int_all_av_noage = ft_freqgrandaverage(cfg, all_Int_alpha_noage{:});
-
-%plot 
-cfg = [];
-cfg.layout = layout_file;
-cfg.showlabels = 'yes';
-cfg.zlim = [-0.1 0.2];
-ft_multiplotTFR(cfg, Alpha_Int_all_av_noage);
-
-cfg = [];
-cfg.layout = layout_file;
-cfg.showlabels = 'yes';
-ft_multiplotER(cfg, TS_Alpha_Int_noage{:});
-
-%For groups
-%devide by intervention
-%ET_Alpha_Int = all_Int_alpha([subjects.group] == 2);
-%TS_Alpha_Int = all_Int_alpha([subjects.group] == 1);
-
-ET_Alpha_Int_noage = all_Int_alpha_noage([subjects.group] == 2);
-TS_Alpha_Int_noage = all_Int_alpha_noage([subjects.group] == 1);
-
-save(fullfile(outputpath, 'ET_Alpha_Int.mat'), 'ET_Alpha_Int_noage');
-save(fullfile(outputpath, 'TS_Alpha_Int.mat'), 'TS_Alpha_Int_noage');
- 
-%ET
-%cfg = [];
-%ET_Alpha_Int = ft_freqgrandaverage(cfg, ET_Alpha_Int{:});
-
-cfg = [];
-ET_Alpha_Int_noage = ft_freqgrandaverage(cfg, ET_Alpha_Int_noage{:});
-
-%plot
-cfg = [];
-cfg.layout = layout_file;
-cfg.showlabels = 'yes';
-cfg.zlim = [-0.1 0.2];
-ft_multiplotTFR(cfg, ET_Alpha_Int_noage);
-
-cfg = [];
-cfg.layout = layout_file;
-cfg.showlabels = 'yes';
-cfg.zlim = [-0.1 0.2];
-ft_multiplotER(cfg, ET_Alpha_Int, ET_Alpha_Int_noage);
-
-%TS
-%cfg = [];
-%TS_Alpha_Int = ft_freqgrandaverage(cfg, TS_Alpha_Int{:});
-
-cfg = [];
-TS_Alpha_Int_noage = ft_freqgrandaverage(cfg, TS_Alpha_Int_noage{:});
-
-%plot
-cfg = [];
-cfg.layout = layout_file;
-cfg.showlabels = 'yes';
-cfg.zlim = [-0.1 0.2];
-ft_multiplotTFR(cfg, TS_Alpha_Int_noage);
-
-cfg = [];
-cfg.layout = layout_file;
-cfg.showlabels = 'yes';
-cfg.zlim = [-0.1 0.2];
-ft_multiplotER(cfg, TS_Alpha_Int, TS_Alpha_Int_noage);
-
-
-%Diff plot
-cfg = [];
-cfg.layout = layout_file;
-cfg.showlabels = 'yes';
-ft_multiplotER(cfg, TS_Alpha_Int_noage, ET_Alpha_Int_noage);
-
-
-%---------------------Beta 
-%For all
-cfg = [];
-Beta_Int_all_av = ft_freqgrandaverage(cfg, all_Int_beta{:});
-
-%plot 
-cfg = [];
-cfg.layout = layout_file;
-cfg.showlabels = 'yes';
-ft_multiplotTFR(cfg, Beta_Int_all_av);
-
-%For groups
-%devide by intervention
-ET_Beta_Int = all_Int_beta([subjects.group] == 1);
-TS_Beta_Int = all_Int_beta([subjects.group] == 2);
-
-save(fullfile(outputpath, 'ET_Beta_Int.mat'), 'ET_Beta_Int');
-save(fullfile(outputpath, 'TS_Beta_Int.mat'), 'TS_Beta_Int');
- 
-%ET
-cfg = [];
-ET_Beta_Int = ft_freqgrandaverage(cfg, ET_Beta_Int{:});
-
-%plot
-cfg = [];
-cfg.layout = layout_file;
-cfg.showlabels = 'yes';
-ft_multiplotTFR(cfg, ET_Beta_Int);
-
-%TS
-cfg = [];
-TS_Beta_Int = ft_freqgrandaverage(cfg, TS_Beta_Int{:});
-
-%plot
-cfg = [];
-cfg.layout = layout_file;
-cfg.showlabels = 'yes';
-ft_multiplotTFR(cfg, TS_Beta_Int);
-
-
-%Diff plot
-cfg = [];
-cfg.layout = layout_file;
-cfg.showlabels = 'yes';
-ft_multiplotER(cfg, TS_Beta_Int, ET_Beta_Int);
-
-
-    
- 
- 
