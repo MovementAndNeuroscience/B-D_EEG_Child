@@ -26,18 +26,16 @@ badchans1(13:21) = allBadchannels(12:20)
 %% BIDS
 
 cd('I:\SCIENCE-NEXS-neurolab\PROJECTS\PLAYMORE\EEG_project1\Analyses\BIDS_data');
-subjects = readtable('subjects.xlsx');
-subjects = table2struct(subjects);
 
 sub = {'01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21'};
-ses = {'before', 'int'};
+ses = {'before', 'int', 'after'};
 
     
 for subindx=1:numel(sub)
     
     
     %Data files    
-    FileNames = {[subjects(subindx).sub, '_pre.bdf']; [subjects(subindx).sub, '_int.bdf']} ;
+    FileNames = {[num2str(subjects(subindx).name), '_pre.bdf']; [num2str(subjects(subindx).name), '_int.bdf']; [num2str(subjects(subindx).name), '_post.bdf']} ;
     
     
   for sesindx=1:numel(ses)    

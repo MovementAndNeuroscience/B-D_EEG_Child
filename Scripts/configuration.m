@@ -7,7 +7,7 @@ addpath C:\Users\dqz718\Documents\fieldtrip-20210525
 ft_defaults;
 
 %Path for analysis subjects
-projectdir = ('I:\SCIENCE-NEXS-neurolab\PROJECTS\PLAYMORE\EEG_project1\Analyses\EEG_Data');
+projectdir = ('I:\SCIENCE-NEXS-neurolab\PROJECTS\PLAYMORE\EEG_project1\Analyses\B-D_EEG_Repo');
 outputdir = ('I:\SCIENCE-NEXS-neurolab\PROJECTS\PLAYMORE\EEG_project1\Analyses\B-D_EEG_Repo\Results');
 cd(projectdir)
 
