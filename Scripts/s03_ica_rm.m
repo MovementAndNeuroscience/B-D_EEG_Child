@@ -10,7 +10,7 @@ configuration
 %researcher has to examine all components, pick the ones for rejection and
 %then add the component number to the code 
 
-%articipants number
+%participant number
 k = 1;
 
 %Participant files
@@ -21,11 +21,11 @@ cd(datapath); %change the working directory to the address specified above
 
 %% ------------------------------   Component Removal  -------------------------------
 %Import the data file 
-datafile_int = dir('*int_preprocessed*.mat'); 
+datafile_int = dir('*_preprocessed*.mat'); 
 mydata_int_preprocessed = importdata(datafile_int.name); %this is the name of the pre intervention file
 
 %Import the comp file
-compfile = dir('comp_int.mat');
+compfile = dir('*_comp*.mat');
 comp_int = importdata(compfile.name);
 
 % Toporgraphy View split into three figures 
@@ -65,14 +65,14 @@ cfg.updatesens = 'yes';
 mydata_int_ica = ft_rejectcomponent(cfg, comp_int, mydata_int_preprocessed);
 
 %Add the rejected components to a structure 
-allRejectedComponents(k).subjects = subjects(k).name; 
+allRejectedComponents(k).subjects = subjects(k).sub; 
 allRejectedComponents(k).int_comp = reject_comp;
 
 %Save the rejected components structure
 save(fullfile(outputdir, 'allRejectedComponents.mat'), 'allRejectedComponents')
 
 %Save the datafile after removing components
-FileName = [num2str(subjects(k).name), '_int_ica.mat'];
+FileName = [subjects(k).sub, '_step5_int_ica.mat'];
 save(fullfile(datapath, FileName), 'mydata_int_ica');
 
 
@@ -97,7 +97,7 @@ end
 removedtrials = originaltrials-trialskept;
 
 %Add these to the same data structure as the one used in preprocessing s02
-allRemovedTrials(k).subjects = subjects(k).name;
+allRemovedTrials(k).subjects = subjects(k).sub;
 allRemovedTrials(k).int_ica = removedtrials; 
 
 %Also add the number of remaining trials to that same structure
@@ -109,11 +109,14 @@ clear trialskept
 clear removedtrials
 
 %save the data after artefacts were removed 
-FileName = [num2str(subjects(k).name), '_int_clean.mat'];
+FileName = [subjects(k).sub, '_step6_int_clean.mat'];
 save(fullfile(datapath, FileName), 'mydata_int_clean');
 
 %Save the removed/remaining trials structure
 save(fullfile(outputdir, 'allRemovedTrials.mat'), 'allRemovedTrials');
+
+
+
 
 
 %% ------------------------------   Quality Checks  -------------------------------
@@ -140,7 +143,7 @@ cfg.layout = layout_file;
 ft_multiplotER(cfg, tmp);
 
 %Save the individual averaged figure for that participant
-FigName = [num2str(subjects(k).name),'_int_wave']; 
+FigName = [subjects(k).sub,'_int_wave']; 
 savefig(FigName)
 
 

@@ -7,10 +7,8 @@
 cd('I:\SCIENCE-NEXS-neurolab\PROJECTS\PLAYMORE\EEG_project1\Analyses\B-D_EEG_Repo\Scripts');
 configuration
 
-cd('I:\SCIENCE-NEXS-neurolab\PROJECTS\PLAYMORE\EEG_project1\Analyses\B-D_EEG_Repo\Results\Intervention');
-all_Int_ERP = importdata('all_ERP_int.mat');
-
 outputpath = 'I:\SCIENCE-NEXS-neurolab\PROJECTS\PLAYMORE\EEG_project1\Analyses\B-D_EEG_Repo\Results\Intervention';
+
 
  
 %% Set up a loop
@@ -21,13 +19,13 @@ for k=1:length(subjects)
     cd(datapath);
     
     %Progress Message
-    fprintf('Working on %s\n', num2str(subjects(k).name))
+    fprintf('Working on %s\n', subjects(k).sub)
     
     %Files 
     currentFolder = dir;
     
     %Data Intervention
-    mydata_int_clean_file = dir('*int_clean*.mat');
+    mydata_int_clean_file = dir('*_clean*.mat');
     mydata_int_clean = importdata(mydata_int_clean_file.name);
     
    

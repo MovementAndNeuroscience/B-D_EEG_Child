@@ -7,10 +7,8 @@
 cd('I:\SCIENCE-NEXS-neurolab\PROJECTS\PLAYMORE\EEG_project1\Analyses\B-D_EEG_Repo\Scripts');
 configuration
 
-cd('I:\SCIENCE-NEXS-neurolab\PROJECTS\PLAYMORE\EEG_project1\Analyses\B-D_EEG_Repo\Results\Intervention');
-all_Int_ERP = importdata('all_ERP_Int.mat');
-
 outputpath = 'I:\SCIENCE-NEXS-neurolab\PROJECTS\PLAYMORE\EEG_project1\Analyses\B-D_EEG_Repo\Results\Intervention';
+
 
  
 %% Set up a loop
@@ -21,13 +19,13 @@ for k=1:length(subjects)
     cd(datapath);
     
     %Progress Message
-    fprintf('Working on %s\n', num2str(subjects(k).name))
+    fprintf('Working on %s\n', subjects(k).sub)
     
     %Files 
     currentFolder = dir;
     
     %Data Intervention
-    mydata_int_clean_file = dir('*int_clean*.mat');
+    mydata_int_clean_file = dir('*_clean*.mat');
     mydata_int_clean = importdata(mydata_int_clean_file.name);
     
    
@@ -60,12 +58,12 @@ for k=1:length(subjects)
  
 end 
 
-%% SELECT PARTICIPANTS - remove those that have not been matched 
+%% SELECT PARTICIPANTS - remove those that have not passed the quality check
 %Remove participants who were not included in analyses from the avergaed
 %data structure and from the subject list
 
-all_Int_ERP = all_Int_ERP([subjects.name] ~= 1001 & [subjects.name] ~= 1017 & [subjects.name] ~= 1026 & [subjects.name] ~= 1023 & [subjects.name] ~= 1010);
-subjects = subjects([subjects.name] ~= 1001 & [subjects.name] ~= 1017 & [subjects.name] ~= 1026 & [subjects.name] ~= 1023 & [subjects.name] ~= 1010);
+all_Int_ERP = all_Int_ERP([subjects.name] ~= 1010 & [subjects.name] ~= 1017 & [subjects.name] ~= 1023);
+subjects = subjects([subjects.name] ~= 1010 & [subjects.name] ~= 1017 & [subjects.name] ~= 1023);
 
 
  %%                                                GRAND AVERAGES 
@@ -115,7 +113,7 @@ for k = 1:length(subjects)
     all_Int_ERP_noage{k}.avg = squeeze(trials_noage(k,:,:)); %select the corrected average and insert back to the original data structure
 end
 
-save(fullfile(outputpath, 'all_ERP_int.mat'), 'all_Int_ERP');
+save(fullfile(outputpath, 'all_ERP_int_noage.mat'), 'all_Int_ERP_noage');
 
 %% --------------Grand Average
 %Pooled for all participants

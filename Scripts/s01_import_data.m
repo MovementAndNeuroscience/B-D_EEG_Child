@@ -17,17 +17,17 @@ for k=1:length(subjects)
 
     %Progress message - prints a message every time it starts working on a
     %new subject
-    fprintf('Working on %s', num2str(subjects(k).name))
+    fprintf('Working on %s', subjects(k).sub)
     
     %Path for participant data 
-    datapath = subjects(k).folder ;
+    datapath = subjects(k).raw_data ;
     cd(datapath);
     
     %Files
     currentFolder = dir; %list files in the subject's folder
     
     %Data
-    FileName = [num2str(subjects(k).name), '_', subjects(k).int, '.bdf'];
+    FileName = [num2str(subjects(k).sub), '_int.bdf'];
     datafile_int = dir(FileName); 
     datafile_int = datafile_int.name; %this is the name of the intervention file
     
@@ -53,8 +53,11 @@ for k=1:length(subjects)
     mydata_int = ft_preprocessing(cfg);
 
     %% Save the data ready for preprocessing
-    FileName = [num2str(subjects(k).name), '_imported_int.mat']; %create a new file name based on subject number
-    save(fullfile(datapath, FileName), 'mydata_int')
+    FileName = [subjects(k).sub, '_step1_int_imported.mat']; %create a new file name based on subject number
+    outputpath = subjects(k).folder; %save in the right folder
+    
+    save(fullfile(outputpath, FileName), 'mydata_int')
+    
     clear FileName
     
 end 

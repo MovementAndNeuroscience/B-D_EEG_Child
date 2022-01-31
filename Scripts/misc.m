@@ -16,11 +16,12 @@ p.adjust(x, method = 'BH')
 
 
 %% Reduce the structures by participants who were excluded
-allBadchannels = allBadchannels([allBadchannels.subjects] ~= 1001 & [allBadchannels.subjects] ~= 1026)
     
 badchans1 = allBadchannels(1:11) 
 badchans1(12) =  allBadchannels(21)
 badchans1(13:21) = allBadchannels(12:20)
+
+allBadchannels = badchans1
 
 
 %% BIDS

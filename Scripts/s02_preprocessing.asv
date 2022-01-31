@@ -164,9 +164,8 @@ for k=1:length(subjects)
     cfg.numcomponent    = 64; %how many components we are expecting
     cfg.method          = 'fastica'; %this is a good, reliable and fast ICA method
     comp_int            = ft_componentanalysis(cfg, mydata_int_temp); 
-    
-    FileName = [subjects(k).sub, '_int_comp.mat'];
-    save(fullfile(datapath, FileName), 'comp_int'); %save the extracted components
+
+    save(fullfile(datapath, 'comp_int.mat'), 'comp_int'); %save the extracted components
     
     
     %% Save the files with bad channels and trials that were removed

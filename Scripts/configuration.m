@@ -33,6 +33,9 @@ cd(outputdir);
 allBadchannels = importdata('allBadchannels.mat');
 
 %% These files were overwritten and are lost
+%However, there was a .csv version of removed trials which was preserved
+%and is accessible in the repository
+
 %Structure with removed trials
 %allRemovedTrials = importdata('allRemovedTrials.mat');
 
