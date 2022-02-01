@@ -12,7 +12,7 @@ ET_ERP_Int_noage = importdata('ET_ERP_Int.mat');
 TS_ERP_Int_noage = importdata('TS_ERP_Int.mat');
 
 
-%% Mean amplitude P300a
+%% Mean amplitude for the period of the identified P300a peak
 
 %Extract mean amplitude for each participant from each group and add to a
 %data structure for mean amplitudes
@@ -56,7 +56,7 @@ mean(y)
 [p,h,stats] = signrank(y)
 
 
-%% Mean amplitude for the period of time used in the permutation tests N200
+%% Mean amplitude for the period of the identified N200 peak
 
 for k=1:length(ET_ERP_Int_noage)
 
@@ -98,7 +98,7 @@ mean(y)
 [p,h,stats] = signrank(y)
 
 
-%% Mean amplitude for the period of time used in the permutation tests P300b
+%% Mean amplitude for the period of the identified P300b peak
 
 
 for k=1:length(ET_ERP_Int_noage)

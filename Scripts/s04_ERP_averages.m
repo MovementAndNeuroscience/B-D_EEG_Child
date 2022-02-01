@@ -44,13 +44,9 @@ for k=1:length(subjects)
     
  %SAVE
   
-  FileName = [num2str(subjects(k).name), '_Int_ERP.mat'];
-  save(fullfile(datapath, FileName), 'Int_ERP_baseline');
-  
- 
   %Add the avergaed file to a structure and add to a list of participants who were included  
   all_Int_ERP{k} = Int_ERP_baseline; %structure with all averages
-  all_ERP_subjects(k) = subjects(k).name; %structure with participants who were processed
+  all_ERP_subjects(k) = convertCharsToStrings(subjects(k).sub); %structure with participants who were processed
   
   %Save the files
   save(fullfile(outputpath, 'all_ERP_int.mat'), 'all_Int_ERP');
@@ -152,6 +148,9 @@ ft_multiplotER(cfg, ET_ERP_Int, ET_ERP_Int_noage);
 %TS
 cfg = [];
 TS_ERP_Int_noage = ft_timelockgrandaverage(cfg, TS_ERP_Int_noage{:});
+
+
+%% ----------------------------PLOTS-----------------------
 
 
 %Plot both groups

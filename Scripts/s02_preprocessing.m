@@ -171,8 +171,25 @@ for k=1:length(subjects)
     
     %% Save the files with bad channels and trials that were removed
 
+cd(outputdir)
+
+%calculate how many channels were removed per person
+for k = 1:length(allBadchannels)
+    allBadchannels(k).int_n = length(allBadchannels(k).int_channels);    
+end
+%change the order of the fields 
+P = [1 3 2];
+allBadchannels = orderfields(allBadchannels,P);
+
+%save as matlab file
 save(fullfile(outputdir, 'allBadchannels.mat'), 'allBadchannels');
+%save in csv for an R script
+writetable(struct2table(allBadchannels), 'allBadchannels.csv');
+
+%save as matlab file
 save(fullfile(outputdir, 'allRemovedTrials.mat'), 'allRemovedTrials');
+%save in csv for an R script
+writetable(struct2table(allRemovedTrials), 'allRemovedTrials.csv');
 
 
     
