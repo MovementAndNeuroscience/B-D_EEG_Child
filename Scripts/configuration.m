@@ -29,7 +29,9 @@ elec = ft_read_sens(elec_file);
 
 %Files with preprocessing notes - interpolated channels, rejected trials and rejected components 
 cd(outputdir);
-%Structure with bad channels
+%Structure with bad channels (this structure was prepared before hand with
+%empty fields for .subject, .pre_n, .int_n, .pre_channels and .int_channels
+%fields
 allBadchannels = importdata('allBadchannels.mat');
 
 %% These files were overwritten and are lost
