@@ -13,8 +13,19 @@ configuration
 % adjustments to the data to start pre-processing as the next step
 % In this case, I will import all data already divided into trials
 
-for k=1:length(subjects)
+% Do not import data for sub-07 and sub-17 which were excluded at the
+% baseline
 
+
+for k=1:length(subjects)
+    %skip the participants who were identified for removal from the
+    %baseline
+    
+    if subjects(k).included == 0
+       continue
+    end
+
+        
     %Progress message - prints a message every time it starts working on a
     %new subject
     fprintf('Working on %s', subjects(k).sub)
@@ -59,6 +70,9 @@ for k=1:length(subjects)
     save(fullfile(outputpath, FileName), 'mydata_int')
     
     clear FileName
+   
     
 end 
+
+
 

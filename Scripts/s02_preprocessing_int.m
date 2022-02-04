@@ -11,6 +11,10 @@ configuration
 
 for k=1:length(subjects)
     
+    if subjects(k).included == 0
+       continue
+    end
+    
     %Progress message - prints a message every time it starts working on a
     %new subject
     fprintf('Working on %s\n', subjects(k).sub)

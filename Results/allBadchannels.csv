@@ -5,7 +5,7 @@ sub-03,0,2,,Fp2,Iz
 sub-04,3,4,AF3,O2,P6,F4,O2,P2,P6
 sub-05,0,0,,
 sub-06,3,5,AF7,Iz,P2,AF7,F7,Iz,P2,PO4
-sub-07,2,2,Iz,PO4,Iz,PO4
+,,,,
 sub-08,7,7,AF7,AF8,Fp2,P10,P2,PO3,T8,AF7,AF8,Fp2,P10,P2,PO3,T8
 sub-09,2,2,CP4,Iz,CP4,Iz
 sub-10,2,5,FT8,PO7,C4,FC1,P4,PO7,PO8
@@ -15,7 +15,7 @@ sub-13,4,2,AF3,AF4,AFz,C5,P10,P9
 sub-14,3,4,F8,FC6,Fp1,AF3,AF8,AFz,Fp2
 sub-15,3,2,AF7,AF8,Fpz,Fp1,Fp2
 sub-16,1,3,Iz,AF7,AF8,Fpz
-sub-17,0,2,,FT8,Iz
+,,,,
 sub-18,2,2,P2,POz,Iz,T7
 sub-19,4,2,FT8,Oz,P6,P9,Iz,P2
 sub-20,1,6,Fp1,FT8,Oz,P2,P6,PO4,T8

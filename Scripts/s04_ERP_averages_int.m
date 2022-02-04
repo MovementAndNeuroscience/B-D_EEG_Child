@@ -14,6 +14,11 @@ outputpath = 'I:\SCIENCE-NEXS-neurolab\PROJECTS\PLAYMORE\EEG_project1\Analyses\B
 %% Set up a loop
 
 for k=1:length(subjects)
+    
+    if subjects(k).included == 0
+       continue
+    end
+    
     %Data & output paths
     datapath = subjects(k).folder_int;
     cd(datapath);
@@ -45,21 +50,26 @@ for k=1:length(subjects)
  %SAVE
   
   %Add the avergaed file to a structure and add to a list of participants who were included  
-  all_Int_ERP{k} = Int_ERP_baseline; %structure with all averages
+  all_ERP_int{k} = Int_ERP_baseline; %structure with all averages
   all_ERP_subjects(k) = convertCharsToStrings(subjects(k).sub); %structure with participants who were processed
   
   %Save the files
-  save(fullfile(outputpath, 'all_ERP_int.mat'), 'all_Int_ERP');
+  save(fullfile(outputpath, 'all_ERP_int.mat'), 'all_ERP_int');
   save(fullfile(outputpath, 'all_ERP_subjects.mat'), 'all_ERP_subjects');
  
 end 
 
 %% SELECT PARTICIPANTS - remove those that have not passed the quality check
-%Remove participants who were not included in analyses from the avergaed
-%data structure and from the subject list
+%adjust the subjects structure to remove already excluded subjects
+subjects = subjects([subjects.included] ~= 0); 
 
-all_Int_ERP = all_Int_ERP([subjects.name] ~= 1010 & [subjects.name] ~= 1017 & [subjects.name] ~= 1023); 
-subjects = subjects([subjects.name] ~= 1010 & [subjects.name] ~= 1017 & [subjects.name] ~= 1023); 
+%Remove participant sub-12 who did not pass the data quality check after
+%the ICA from the ERP and the subjecy structures
+
+all_ERP_int = all_ERP_int([subjects.name] ~= 1017); 
+
+
+subjects = subjects([subjects.name] ~= 1017); 
 
 
  %%                                                GRAND AVERAGES 
@@ -85,13 +95,13 @@ age(:,1) = [subjects.age];
 %with the field called "trials" which us required by the function. Here the
 %"trials" are actually participants' averaged data
 for k = 1:length(subjects)
-    trials(k,:,:) = all_Int_ERP{k}.avg;
+    trials(k,:,:) = all_ERP_int{k}.avg;
 end
 
 %Arrange the structure that will be compatibale with the function
-all_averaged_ERPs.time = all_Int_ERP{1}.time;
-all_averaged_ERPs.label = all_Int_ERP{1}.label;
-all_averaged_ERPs.elec = all_Int_ERP{1}.elec;
+all_averaged_ERPs.time = all_ERP_int{1}.time;
+all_averaged_ERPs.label = all_ERP_int{1}.label;
+all_averaged_ERPs.elec = all_ERP_int{1}.elec;
 all_averaged_ERPs.dimord = 'rpt_chan_time';
 all_averaged_ERPs.trial = trials;
 
@@ -102,19 +112,19 @@ all_averaged_ERPs_con = ft_regressconfound(cfg, all_averaged_ERPs);
 
 %Now these corrected values must be extracted and inserted back into the
 %original data structure with all avergaed ERPs for each participant
-all_Int_ERP_noage = all_Int_ERP; %Copy the old structure
+all_ERP_int_noage = all_ERP_int; %Copy the old structure
 trials_noage = all_averaged_ERPs_con.trial; %Copy all of the corrected averages
 
 for k = 1:length(subjects)
-    all_Int_ERP_noage{k}.avg = squeeze(trials_noage(k,:,:)); %select the corrected average and insert back to the original data structure
+    all_ERP_int_noage{k}.avg = squeeze(trials_noage(k,:,:)); %select the corrected average and insert back to the original data structure
 end
 
-save(fullfile(outputpath, 'all_ERP_int_noage.mat'), 'all_Int_ERP_noage');
+save(fullfile(outputpath, 'all_ERP_int_noage.mat'), 'all_ERP_int_noage');
 
 %% --------------Grand Average
 %Pooled for all participants
 cfg = [];
-ERP_Int_all_av_noage = ft_timelockgrandaverage(cfg, all_Int_ERP_noage{:});
+ERP_Int_all_av_noage = ft_timelockgrandaverage(cfg, all_ERP_int_noage{:});
 
 %plot 
 cfg = [];
@@ -126,8 +136,8 @@ ft_multiplotER(cfg, ERP_Int_all_av_noage);
 %Divide the overall data structure to two separate groups - motor
 %intervention and control
 
-ET_ERP_Int_noage = all_Int_ERP_noage([subjects.group] == 2);
-TS_ERP_Int_noage = all_Int_ERP_noage([subjects.group] == 1);
+ET_ERP_Int_noage = all_ERP_int_noage([subjects.group] == 2);
+TS_ERP_Int_noage = all_ERP_int_noage([subjects.group] == 1);
 
 %Save the group specific structure files
 save(fullfile(outputpath, 'ET_ERP_Int.mat'), 'ET_ERP_Int_noage');

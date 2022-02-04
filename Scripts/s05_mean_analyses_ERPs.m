@@ -146,3 +146,5 @@ writetable(struct2table(peaks), 'peaks.csv')
 
 %Save as a matlab file 
 save(fullfile(outputpath, 'peaks.mat'), 'peaks');
+
+

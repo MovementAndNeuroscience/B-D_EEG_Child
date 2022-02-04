@@ -14,7 +14,7 @@ cd(outputpath);
 
 %% Set up a loop
 
-for k=2:length(subjects)
+for k=1:length(subjects)
     %get all the data
     datapath = subjects(k).folder;
     cd(datapath);
@@ -113,8 +113,14 @@ end
 %Looks like sub-07 and sub-17 are outliers and will need to be excluded
 %from analyses
 
-all_ERP_Pre_noage = all_ERP_Pre_noage([subjects.name] ~= 1010 & [subjects.name] ~= 1023); 
-subjects = subjects([subjects.name] ~= 1010 & [subjects.name] ~= 1023); 
+%In addition, from quality assessment of the intervention files, sub-12
+%also cannot be included in the analyses of the intervention data. To make
+%sure that we compare the baseline between participants who are included in
+%the main intervention analyses, sub-12 will be excluded from the
+%comparisons below as well.
+
+all_ERP_Pre_noage = all_ERP_Pre_noage([subjects.name] ~= 1010 & [subjects.name] ~= 1017 &[subjects.name] ~= 1023); 
+subjects = subjects([subjects.name] ~= 1010 & [subjects.name] ~= 1017& [subjects.name] ~= 1023); 
 
 
 %%                                         Grand averages 
@@ -146,7 +152,7 @@ ET_ERP_Pre = ft_timelockgrandaverage(cfg, ET_ERP_Pre{:});
 cfg = [];
 TS_ERP_Pre = ft_timelockgrandaverage(cfg, TS_ERP_Pre{:});
 
-
+%% -----------------------------PLOT------------------------------------
 %plot
 cfg = [];
 cfg.layout = layout_file;
@@ -155,6 +161,99 @@ cfg.linewidth = 1;
 ft_multiplotER(cfg, ET_ERP_Pre, TS_ERP_Pre);
 
 
+
+%% ---------------------------------- STATS-----------------------------
+%% Prepare the groups
+
+ET_ERP_Pre = all_ERP_Pre_noage([subjects.group] == 2);
+TS_ERP_Pre = all_ERP_Pre_noage([subjects.group] == 1);
+
+% Place the group value in a separate array 
+group = ones(1, (length(TS_ERP_Pre)+length(ET_ERP_Pre)));
+group((length(TS_ERP_Pre)+1): end) = 2;
+
+%% Setup study design 
+% Define the study design: in this example it is a between-group t-test.
+% ivar = the independent variable, i.e. group or condition.
+% uvar = unit of observation, i.e. identifier per subject 
+
+n_ctrl = sum(group == 1); % number of TS
+n_Dptns = sum(group == 2); % number of ET
+
+ivar  = [ones(n_ctrl,1); ones(n_Dptns,1)*2]; %this is the group variable as a column
+uvar  = 1:length(group); %number of participants
+design = [group; uvar]';
+
+%% Between-group permutation Fz
+
+cd('I:\SCIENCE-NEXS-neurolab\PROJECTS\PLAYMORE\EEG_project1\Analyses\B-D_EEG_Repo\Results\Stats\Baseline');
+
+cfg = [];
+cfg.method              = 'montecarlo'; 
+cfg.statistic           = 'ft_statfun_indepsamplesT';
+cfg.correctm            = 'cluster';
+cfg.clusteralpha        = 0.05;        
+cfg.clusterstatistic    = 'maxsum';
+cfg.tail                = 0;
+cfg.clustertail         = 0;            % = two-tailed hypothesis
+cfg.alpha               = 0.025;        % = 0.05/2 for two-tailed hypothesis
+cfg.channel             = 'Fz'; 
+cfg.latency             = [0.15 0.4]; 
+cfg.numrandomization    = 1000;
+cfg.neighbours          = neighbours;
+cfg.design              = design;
+cfg.ivar                = 1; %group identifier specifies the column in the matrix "design" which is the independent variable
+stats = ft_timelockstatistics(cfg, TS_ERP_Pre{:}, ET_ERP_Pre{:}); 
+
+save stats_Fz_pre stats;
+
+
+%% Between-group permutation Cz
+
+cd('I:\SCIENCE-NEXS-neurolab\PROJECTS\PLAYMORE\EEG_project1\Analyses\B-D_EEG_Repo\Results\Stats\Baseline');
+
+cfg = [];
+cfg.method              = 'montecarlo'; 
+cfg.statistic           = 'ft_statfun_indepsamplesT';
+cfg.correctm            = 'cluster';
+cfg.clusteralpha        = 0.05;        
+cfg.clusterstatistic    = 'maxsum';
+cfg.tail                = 0;
+cfg.clustertail         = 0;            % = two-tailed hypothesis
+cfg.alpha               = 0.025;        % = 0.05/2 for two-tailed hypothesis
+cfg.channel             = 'Cz'; 
+cfg.latency             = [0.15 0.4]; 
+cfg.numrandomization    = 1000;
+cfg.neighbours          = neighbours;
+cfg.design              = design;
+cfg.ivar                = 1; %group identifier specifies the column in the matrix "design" which is the independent variable
+stats = ft_timelockstatistics(cfg, TS_ERP_Pre{:}, ET_ERP_Pre{:}); 
+
+save stats_Cz_pre stats;
+
+
+%% Between-group permutation Pz
+
+cd('I:\SCIENCE-NEXS-neurolab\PROJECTS\PLAYMORE\EEG_project1\Analyses\B-D_EEG_Repo\Results\Stats\Baseline');
+
+cfg = [];
+cfg.method              = 'montecarlo'; 
+cfg.statistic           = 'ft_statfun_indepsamplesT';
+cfg.correctm            = 'cluster';
+cfg.clusteralpha        = 0.05;        
+cfg.clusterstatistic    = 'maxsum';
+cfg.tail                = 0;
+cfg.clustertail         = 0;            % = two-tailed hypothesis
+cfg.alpha               = 0.025;        % = 0.05/2 for two-tailed hypothesis
+cfg.channel             = 'Pz'; 
+cfg.latency             = [0.15 0.4]; 
+cfg.numrandomization    = 1000;
+cfg.neighbours          = neighbours;
+cfg.design              = design;
+cfg.ivar                = 1; %group identifier specifies the column in the matrix "design" which is the independent variable
+stats = ft_timelockstatistics(cfg, TS_ERP_Pre{:}, ET_ERP_Pre{:}); 
+
+save stats_Pz_pre stats;
 
 
 
