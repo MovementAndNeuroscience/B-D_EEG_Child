@@ -194,11 +194,6 @@ F1_cluster = [0.1882 0.2117];
 Fz_cluster = [0.1824 0.2449];
 F2_cluster = [0.1941 0.2449];
 
-P1_cluster = [0.2 0.2292];
-Pz_cluster = [0.2 0.2214];
-P2_cluster = [0.2 0.2410];
-
-
 
 for k=1:length(ET_ERP_Int)
 
@@ -227,69 +222,7 @@ F2_ET = mean(F2_ET.avg);
 N200_ET_amp(k).F2 = F2_ET;
 
 
-N200_ET_amp(k).clusterF = mean([N200_ET_amp(k).F1, N200_ET_amp(k).Fz, N200_ET_amp(k).F2]);
-
-
-
-cfg = [];
-cfg.latency = F1_cluster;
-cfg.channel = 'F1';
-F1_TS = ft_selectdata(cfg, TS_ERP_Int{k});
-F1_TS = mean(F1_TS.avg);
-
-N200_TS_amp(k).F1 = F1_TS;
-
-cfg = [];
-cfg.latency = Fz_cluster;
-cfg.channel = 'Fz';
-Fz_TS = ft_selectdata(cfg, TS_ERP_Int{k});
-Fz_TS = mean(Fz_TS.avg);
-
-N200_TS_amp(k).Fz = Fz_TS;
-
-cfg = [];
-cfg.latency = F2_cluster;
-cfg.channel = 'F2';
-F2_TS = ft_selectdata(cfg, TS_ERP_Int{k});
-F2_TS = mean(F2_TS.avg)
-
-N200_TS_amp(k).F2 = F2_TS;
-
-
-N200_TS_amp(k).clusterF = mean([N200_TS_amp(k).F1, N200_TS_amp(k).Fz, N200_TS_amp(k).F2]);
-
-
-% N200
-%calculate the mean for each channel and then the mean for the whole
-%cluster
-
-
-cfg = [];
-cfg.latency = P1_cluster;
-cfg.channel = 'P1';
-P1_ET = ft_selectdata(cfg, ET_ERP_Int{k});
-P1_ET = mean(P1_ET.avg);
-
-N200_ET_amp(k).P1 = P1_ET;
-
-cfg = [];
-cfg.latency = Pz_cluster;
-cfg.channel = 'Pz';
-Pz_ET = ft_selectdata(cfg, ET_ERP_Int{k});
-Pz_ET = mean(Pz_ET.avg);
-
-N200_ET_amp(k).Pz = Pz_ET;
-
-cfg = [];
-cfg.latency = P2_cluster;
-cfg.channel = 'P2';
-P2_ET = ft_selectdata(cfg, ET_ERP_Int{k});
-P2_ET = mean(P2_ET.avg);
-
-N200_ET_amp(k).P2 = P2_ET;
-
-
-N200_ET_amp(k).clusterP = mean([N200_ET_amp(k).P1, N200_ET_amp(k).Pz, N200_ET_amp(k).P2]);
+N200_ET_amp(k).cluster = mean([N200_ET_amp(k).F1, N200_ET_amp(k).Fz, N200_ET_amp(k).P2]);
 
 
 
@@ -318,19 +251,91 @@ P2_TS = mean(P2_TS.avg)
 N200_TS_amp(k).P2 = P2_TS;
 
 
-N200_TS_amp(k).clusterP = mean([N200_TS_amp(k).P1, N200_TS_amp(k).Pz, N200_TS_amp(k).P2]);
+N200_TS_amp(k).cluster = mean([N200_TS_amp(k).P1, N200_TS_amp(k).Pz, N200_TS_amp(k).P2]);
 
 end 
 
 
 
-x1 = [N200_ET_amp.clusterF]; 
-x2 = [N200_TS_amp.clusterF]; 
-dF = computeCohen_d(x1, x2, 'paired')
+x1 = [N200_ET_amp.cluster]; 
+x2 = [N200_TS_amp.cluster]; 
+d = computeCohen_d(x1, x2, 'paired')
 
-x1 = [N200_ET_amp.clusterP]; 
-x2 = [N200_TS_amp.clusterP]; 
-dP = computeCohen_d(x1, x2, 'paired')
+
+% N200
+%calculate the mean for each channel and then the mean for the whole
+%cluster
+
+P1_cluster = [0.2 0.2292];
+Pz_cluster = [0.2 0.2214];
+P2_cluster = [0.2 0.2410];
+
+
+for k=1:length(ET_ERP_Int)
+
+cfg = [];
+cfg.latency = P1_cluster;
+cfg.channel = 'P1';
+P1_ET = ft_selectdata(cfg, ET_ERP_Int{k});
+P1_ET = mean(P1_ET.avg);
+
+N200_ET_amp(k).P1 = P1_ET;
+
+cfg = [];
+cfg.latency = Pz_cluster;
+cfg.channel = 'Pz';
+Pz_ET = ft_selectdata(cfg, ET_ERP_Int{k});
+Pz_ET = mean(Pz_ET.avg);
+
+N200_ET_amp(k).Pz = Pz_ET;
+
+cfg = [];
+cfg.latency = P2_cluster;
+cfg.channel = 'P2';
+P2_ET = ft_selectdata(cfg, ET_ERP_Int{k});
+P2_ET = mean(P2_ET.avg);
+
+N200_ET_amp(k).P2 = P2_ET;
+
+
+N200_ET_amp(k).cluster = mean([N200_ET_amp(k).P1, N200_ET_amp(k).Pz, N200_ET_amp(k).P2]);
+
+
+
+cfg = [];
+cfg.latency = P1_cluster;
+cfg.channel = 'P1';
+P1_TS = ft_selectdata(cfg, TS_ERP_Int{k});
+P1_TS = mean(P1_TS.avg);
+
+N200_TS_amp(k).P1 = P1_TS;
+
+cfg = [];
+cfg.latency = Pz_cluster;
+cfg.channel = 'Pz';
+Pz_TS = ft_selectdata(cfg, TS_ERP_Int{k});
+Pz_TS = mean(Pz_TS.avg);
+
+N200_TS_amp(k).Pz = Pz_TS;
+
+cfg = [];
+cfg.latency = P2_cluster;
+cfg.channel = 'P2';
+P2_TS = ft_selectdata(cfg, TS_ERP_Int{k});
+P2_TS = mean(P2_TS.avg)
+
+N200_TS_amp(k).P2 = P2_TS;
+
+
+N200_TS_amp(k).cluster = mean([N200_TS_amp(k).P1, N200_TS_amp(k).Pz, N200_TS_amp(k).P2]);
+
+end 
+
+
+
+x1 = [N200_ET_amp.cluster]; 
+x2 = [N200_TS_amp.cluster]; 
+d = computeCohen_d(x1, x2, 'paired')
 
 
 

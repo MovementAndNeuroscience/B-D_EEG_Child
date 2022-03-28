@@ -3,7 +3,7 @@
 
 %path to fieldtrip
 restoredefaultpath;
-addpath C:\Users\dqz718\Documents\fieldtrip-20210525
+addpath C:\Users\dqz718\Documents\fieldtrip-20220314
 ft_defaults;
 
 %Path for analysis subjects
