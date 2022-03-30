@@ -218,7 +218,7 @@ cfg.channel = 'Pz';
 cfg.latency = [0.2 0.25];
 n200_ET = ft_selectdata(cfg, ET_ERP_Int_noage);
 
-x = min(n200_ET.avg);
+x = max(n200_ET.avg);
 n200_ET_peak = n200_ET.time([n200_ET.avg] == x)
 
 cfg = [];
@@ -226,7 +226,7 @@ cfg.channel = 'Pz';
 cfg.latency = [0.2 0.25];
 n200_TS = ft_selectdata(cfg, TS_ERP_Int_noage);
 
-x = min(n200_TS.avg);
+x = max(n200_TS.avg);
 n200_TS_peak = n200_TS.time([n200_TS.avg] == x)
 
 
@@ -237,13 +237,13 @@ cfg.latency = [0.3 0.4];
 p300b_ET = ft_selectdata(cfg, ET_ERP_Int_noage);
 
 x = max(p300b_ET.avg);
-p300b_ET_peak = p300b_ET.time([p300b_ET.avg] == x)
+p300b_ET_peak = p300b.time([p300b.avg] == x)
 
 cfg = [];
 cfg.channel = 'Pz';
 cfg.latency = [0.3 0.4];
 p300b_TS = ft_selectdata(cfg, TS_ERP_Int_noage);
 
-x = max(p300b_TS.avg);
-p300b_TS_peak = p300b_TS.time([p300b_TS.avg] == x)
+x = max(n200_TS.avg);
+n200_TS_peak = n200_TS.time([n200_TS.avg] == x)
 
