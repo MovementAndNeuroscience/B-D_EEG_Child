@@ -6,7 +6,7 @@ library(tidyr)
 setwd('I:/SCIENCE-NEXS-neurolab/PROJECTS/PLAYMORE/EEG_project1/Analyses/B-D_EEG_Repo/Results')
 
 # Load the data for channels and trials and subjects
-df_channels <- read.csv('allBadchannels.csv', col.names = c('subjects', 'int_n', 'chan_1', 'chan_2', 'chan_3', 'chan_4', 'chan_5', 'chan_6', 'chan_7'))
+df_channels <- read.csv('allBadchannels.csv', col.names = c('subjects','pre_n', 'int_n', 'chan_1', 'chan_2', 'chan_3', 'chan_4', 'chan_5', 'chan_6', 'chan_7', 'chan_8', 'chan_9', 'chan_10', 'chan_11', 'chan_12', 'chan_13', 'chan_14'))
 df_trials <- read.csv('allRemovedTrials.csv')
 
 setwd('I:/SCIENCE-NEXS-neurolab/PROJECTS/PLAYMORE/EEG_project1/Analyses/B-D_EEG_Repo')
@@ -21,8 +21,11 @@ df_trials$cond <- df_subjects$int
 df_channels <- df_channels %>% dplyr::filter(subjects != 'sub-07', subjects != 'sub-12', subjects != 'sub-17')
 df_trials <- df_trials %>% dplyr::filter(subjects != 'sub-07', subjects != 'sub-12', subjects != 'sub-17')
 
+#remove empty rows
+df_channels <- df_channels[rowSums(is.na(df_channels)) == 0,]
 
 
+#------------------INTERVENTION-------------------------------------
 
 # ----------------- CHANNELS PER GROUP --------------------------------
 #Calculate how many channels were interpolated per person
@@ -59,5 +62,46 @@ trials_all_removed_TS_IQR <- IQR(df_trials$all_removed[df_trials$cond == 'TS'])
 
 wilcox.test(df_trials$all_removed[df_trials$cond == 'ET'], df_trials$all_removed[df_trials$cond == 'TS'], alternative = "two.sided")
 
+int_trials_remaining_ET_mean <- mean(df_trials$int_remaining[df_trials$cond == 'ET'])
+int_trials_remaining_TS_mean <- mean(df_trials$int_remaining[df_trials$cond == 'TS'])
+
+#------------------------PRE-INTERVENTION------------------------------------------
+
+# ----------------- CHANNELS PER GROUP --------------------------------
+#Calculate how many channels were interpolated per person
+pre_chans_ET_mean <- mean(df_channels$pre_n[df_channels$cond == 'ET'])
+pre_chans_TS_mean <- mean(df_channels$pre_n[df_channels$cond == 'TS'])
+pre_chans_ET_median <- median(df_channels$pre_n[df_channels$cond == 'ET'])
+pre_chans_TS_median <- median(df_channels$pre_n[df_channels$cond == 'TS'])
+
+pre_chans_ET_sd <- sd(df_channels$pre_n[df_channels$cond == 'ET'])
+pre_chans_TS_sd <- sd(df_channels$pre_n[df_channels$cond == 'TS'])
+pre_chans_ET_IQR <- IQR(df_channels$pre_n[df_channels$cond == 'ET'])
+pre_chans_TS_IQR <- IQR(df_channels$pre_n[df_channels$cond == 'TS'])
+
+wilcox.test(df_channels$pre_n[df_channels$cond == 'ET'], df_channels$pre_n[df_channels$cond == 'TS'], alternative = "two.sided")
 
 
+
+#----------------- TRIALS PER GROUP -------------------------------
+#Calculate how many trials were there in total per person and how many were removed 
+#There should be 40 per person but this is a good sanity check
+df_trials$pre_total <- df_trials$pre_processing + df_trials$pre_ica + df_trials$pre_remaining
+df_trials$pre_removed <- df_trials$pre_processing + df_trials$pre_ica 
+
+
+pre_trials_all_removed_ET_mean <- mean(df_trials$pre_removed[df_trials$cond == 'ET'])
+pre_trials_all_removed_TS_mean <- mean(df_trials$pre_removed[df_trials$cond == 'TS'])
+pre_trials_all_removed_ET_median <- median(df_trials$pre_removed[df_trials$cond == 'ET'])
+pre_trials_all_removed_TS_median <- median(df_trials$pre_removed[df_trials$cond == 'TS'])
+
+pre_trials_all_removed_ET_sd <- sd(df_trials$pre_removed[df_trials$cond == 'ET'])
+pre_trials_all_removed_TS_sd <- sd(df_trials$pre_removed[df_trials$cond == 'TS'])
+pre_trials_all_removed_ET_IQR <- IQR(df_trials$pre_removed[df_trials$cond == 'ET'])
+pre_trials_all_removed_TS_IQR <- IQR(df_trials$pre_removed[df_trials$cond == 'TS'])
+
+wilcox.test(df_trials$pre_removed[df_trials$cond == 'ET'], df_trials$pre_removed[df_trials$cond == 'TS'], alternative = "two.sided")
+
+
+pre_trials_remaining_ET_mean <- mean(df_trials$pre_remaining[df_trials$cond == 'ET'])
+pre_trials_remaining_TS_mean <- mean(df_trials$pre_remaining[df_trials$cond == 'TS'])

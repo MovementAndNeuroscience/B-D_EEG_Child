@@ -197,7 +197,7 @@ cfg.clusterstatistic    = 'maxsum';
 cfg.tail                = 0;
 cfg.clustertail         = 0;            % = two-tailed hypothesis
 cfg.alpha               = 0.025;        % = 0.05/2 for two-tailed hypothesis
-cfg.channel             = 'Fz'; 
+cfg.channel             = {'F1', 'Fz', 'F2'}; %F1, Fz and F2
 cfg.latency             = [0.15 0.4]; 
 cfg.numrandomization    = 1000;
 cfg.neighbours          = neighbours;
@@ -207,30 +207,17 @@ stats = ft_timelockstatistics(cfg, TS_ERP_Pre{:}, ET_ERP_Pre{:});
 
 save stats_Fz_pre stats;
 
-
-%% Between-group permutation Cz
-
-cd('I:\SCIENCE-NEXS-neurolab\PROJECTS\PLAYMORE\EEG_project1\Analyses\B-D_EEG_Repo\Results\Stats\Baseline');
+%get information about the time of the cluster
+cluster1 = stats.negclusterslabelmat;
 
 cfg = [];
-cfg.method              = 'montecarlo'; 
-cfg.statistic           = 'ft_statfun_indepsamplesT';
-cfg.correctm            = 'cluster';
-cfg.clusteralpha        = 0.05;        
-cfg.clusterstatistic    = 'maxsum';
-cfg.tail                = 0;
-cfg.clustertail         = 0;            % = two-tailed hypothesis
-cfg.alpha               = 0.025;        % = 0.05/2 for two-tailed hypothesis
-cfg.channel             = 'Cz'; 
-cfg.latency             = [0.15 0.4]; 
-cfg.numrandomization    = 1000;
-cfg.neighbours          = neighbours;
-cfg.design              = design;
-cfg.ivar                = 1; %group identifier specifies the column in the matrix "design" which is the independent variable
-stats = ft_timelockstatistics(cfg, TS_ERP_Pre{:}, ET_ERP_Pre{:}); 
+cfg.latency = [0.15 0.4];
+timeData = ft_selectdata(cfg, TS_ERP_Pre{1});
 
-save stats_Cz_pre stats;
+cluster1(4,:) = timeData.time;
 
+%execute cluster1 to check the time of the cluster for each of the three
+%channels
 
 %% Between-group permutation Pz
 
@@ -245,8 +232,8 @@ cfg.clusterstatistic    = 'maxsum';
 cfg.tail                = 0;
 cfg.clustertail         = 0;            % = two-tailed hypothesis
 cfg.alpha               = 0.025;        % = 0.05/2 for two-tailed hypothesis
-cfg.channel             = 'Pz'; 
-cfg.latency             = [0.15 0.4]; 
+cfg.channel             = {'P1', 'Pz', 'P2'}; 
+cfg.latency             = [0.15 0.4];
 cfg.numrandomization    = 1000;
 cfg.neighbours          = neighbours;
 cfg.design              = design;
