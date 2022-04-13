@@ -1,4 +1,4 @@
-# Embodied Cognition as a Tool to Facilitate Academic Progress and Cognitive Effort in School-Age Children. 
+# The Cognitive Benefits of Embodied Learning for Early Literacy Education. 
 
 Raw BIDS data: https://openneuro.org/datasets/ds004017 
 
