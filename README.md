@@ -1,4 +1,4 @@
-# Embodied Cognition as a Tool to Facilitate Academic Progress and Cognitive Effort in School-Age Children. 
+# The Cognitive Benefits of Embodied Learning for Early Literacy Education. 
 
 Raw BIDS data: https://openneuro.org/datasets/ds004017 
 
@@ -31,6 +31,7 @@ In this report we were only interested in the differences in brian activity duri
 ### **Scripts**  
 The main script folder contains scripts that were used to analyse the intervention data. There is also a "Baseline" sub-folder which was holds scripts used to analyse the pre-intervention data.  
 The scripts are numbered chronologically to reflect the different steps of analyses. s01 to s03 are pre-processing scripts operating on individual data. s04 averages individual data and saves averaged data for statistical analyses. s05 and s06 are statistical analyses scripts.  
+One additional script "trials_and_channels" was used to calculate how many trials were removed at different stages of pre-processing and how many channels were interpolated per participant.
   
 ### **Results**  
 The derivatives from preprocessing individual data files can be found in the OSF repository: https://osf.io/2bhx3/   
