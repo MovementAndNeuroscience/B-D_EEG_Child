@@ -162,6 +162,7 @@ TS_ERP_Int_noage = ft_timelockgrandaverage(cfg, TS_ERP_Int_noage{:});
 cfg = [];
 cfg.layout = layout_file;
 cfg.showlabels = 'yes';
+cfg.showscale = 'yes';
 cfg.xlim = [-0.1 0.8]; 
 cfg.linewidth = 1;
 ft_multiplotER(cfg, ET_ERP_Int_noage, TS_ERP_Int_noage);
