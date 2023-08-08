@@ -4,7 +4,7 @@ Raw BIDS data: https://openneuro.org/datasets/ds004017
 
 OSF repository with individual data derivatives: https://osf.io/2bhx3/ 
   
-Project preprint:  
+Project preprint:  https://psyarxiv.com/zmctf/
   
 Contact: Jacob Wienecke wienecke@nexs.ku.dk
 
